@@ -3511,8 +3511,9 @@ function heroColorVars(){ const [c1]=entColors(CUR); const ab=$('abtns'); if(ab)
 // ---------- skin row in hero select ----------
 function renderSkins(){ const row=$('hsSkins'); if(!row) return; const k=CUR; const cur=skinOf(k).id;
   row.innerHTML=SKINS.map(s=>{ const own=skinOwned(k,s.id); const dot=s.id==='std'?HEROES[k].col:'#'+s.main.toString(16).padStart(6,'0');
-    return `<button data-sk="${s.id}" class="${cur===s.id?'on':''}"><span class="dot" style="background:${dot}"></span>${s.name}${own?'':` 🔒${s.id==='gold'?'（集齐全套免费）':''} ${s.price}币`}</button>`; }).join('')+`<span class="coin">🪙 ${SAVE.coins|0}</span>`;
+    return `<button data-sk="${s.id}" class="${cur===s.id?'on':''}"><span class="dot" style="background:${dot}"></span>${s.name}${own?'':s.reward?' 🔒 击败最终Boss':` 🔒${s.id==='gold'?'（集齐全套免费）':''} ${s.price}币`}</button>`; }).join('')+`<span class="coin">🪙 ${SAVE.coins|0}</span>`;
   row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ initAudio(); const id=b.dataset.sk, s=SKINS.find(x=>x.id===id);
+    if(!skinOwned(k,id)&&s.reward){ $('hsMoves').textContent='🌌 虚无皮肤：在闯关终章击败「暗皇·虚无 ZERO」后，全机体解锁。'; if(AC) SFX.clank(); return; }
     if(!skinOwned(k,id)){ if((SAVE.coins|0)<s.price){ $('hsMoves').textContent=`🪙 币不够！${s.name}皮肤要 ${s.price} 币，去闯关或扭蛋赚币吧。`; if(AC) SFX.clank(); return; }
       SAVE.coins-=s.price; (SAVE.skins[k]=SAVE.skins[k]||[]).push(id); $('hsMoves').textContent=`✨ 购买成功：${HEROES[k].name}「${s.name}」皮肤！特效也会变成${s.name}色。`; if(AC){ SFX.chime(); } }
     SAVE.skin[k]=id; saveGame(); applySkin(k); heroColorVars(); renderSkins(); startEntrance(k,'select'); }); }
@@ -3982,6 +3983,42 @@ function enterTransition(done,ms=1500,label='正在进入战场…'){ loadScreen
   setTimeout(()=>{ clearInterval(iv); loadScreen(true,'准备完毕！',100); setTimeout(()=>{ loadScreen(false); done&&done(); },250); },ms); }
 
 loadScreen(true,'载入中… 组装机体',70);
+// ================= v1.9: final boss rewards =================
+SKINS.push({id:'void',name:'虚无',price:0,reward:true,main:0x1c0a2a,sub:0x050308,trim:0x8a2aff,glow:0xd040ff,fx:0xb040ff,c1:'#b040ff',c2:'#ffb0ff'});
+const _skinOwned0=skinOwned; skinOwned=function(k,id){ if(id==='void') return UNLOCK_ALL||!!SAVE.voidClear; return _skinOwned0(k,id); };
+ACH.push({id:'voidk',ic:'🌌',name:'虚无终结者',desc:'击败最终 Boss 暗皇·虚无 ZERO',goal:()=>[SAVE.voidClear?1:0,1],rw:'虚无皮肤 + 称号'});
+const _refreshBonuses0=refreshBonuses; refreshBonuses=function(){ _refreshBonuses0(); if(SAVE.voidClear||UNLOCK_ALL) OV.enMax+=50; };
+function grantVoidRewards(){ SAVE.voidClear=true; addCoins(500); ALLH.forEach(k=>{ SAVE.ult[k]=SAVE.ult[k]||[0,0]; SAVE.ult[k][0]=1; }); if(!SAVE.ach.includes('voidk')) SAVE.ach.push('voidk'); refreshBonuses(); OV.en=OV.enMax; saveGame(); }
+(function(){ const st=document.createElement('style'); st.textContent=`
+#endingScr{position:fixed;inset:0;z-index:150;display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#2a0a4a,#07040c 70%);color:#fff;font-family:"PingFang SC","Microsoft YaHei",sans-serif;text-align:center}
+#endingScr .stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 70% 30%,#fff,transparent),radial-gradient(2px 2px at 40% 70%,#ffd23a,transparent),radial-gradient(1px 1px at 85% 80%,#fff,transparent),radial-gradient(1px 1px at 25% 85%,#fff,transparent);opacity:.8}
+#endingScr .ttl{font-size:clamp(46px,14vw,96px);font-weight:900;font-style:italic;letter-spacing:.08em;background:linear-gradient(180deg,#fff,#ffd23a 55%,#ff7a1a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 20px #b040ff);animation:endIn 1.2s cubic-bezier(.2,1.4,.4,1) both}
+#endingScr .sub{font-size:clamp(14px,4vw,20px);margin:6px 18px 0;opacity:.9;animation:endIn 1s .5s both}
+#endingScr .rw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:min(520px,92vw);margin:22px 0 18px}
+#endingScr .it{border:2px solid #ffd23a;border-radius:14px;padding:12px 8px;background:rgba(255,210,58,.08);animation:cardIn .5s cubic-bezier(.2,1.6,.4,1) both}
+#endingScr .it.wide{grid-column:1/-1;border-color:#d040ff;background:rgba(176,64,255,.15)}
+#endingScr .it b{display:block;font-size:30px}#endingScr .it span{display:block;font-size:15px;font-weight:900;margin-top:4px}#endingScr .it small{display:block;font-size:12px;opacity:.8;margin-top:2px}
+#endingScr button{padding:12px 30px;border-radius:999px;border:none;font-size:17px;font-weight:900;background:linear-gradient(90deg,#ff5a1f,#ffd23a);color:#2a0a00;animation:endIn .6s 3.2s both}
+#endingScr .cr{position:absolute;left:0;right:0;bottom:-100%;font-size:13px;line-height:2;opacity:.55;animation:credits 16s linear infinite}
+@keyframes endIn{from{opacity:0;transform:scale(1.6)}to{opacity:1;transform:none}}
+@keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.8)}to{opacity:1;transform:none}}
+@keyframes credits{from{transform:translateY(0)}to{transform:translateY(-260vh)}}
+`; document.head.appendChild(st); const d=document.createElement('div'); d.id='endingScr'; document.body.appendChild(d); })();
+function showEnding(first,done){ const d=$('endingScr');
+  const items=first?[['🪙','+500 币','直接存入'],['🔥','全机体极必杀','8 台全部解锁'],['⚡','EN 上限 +50','永久加成'],['🏆','称号「虚无终结者」','显示在主菜单'],['🌌','虚无皮肤 · 全机体','暗紫装甲 + 黑色虚无特效，选英雄时更换','wide']]:[['🪙','+100 币','再次击败暗皇']];
+  d.innerHTML=`<div class="stars"></div><div class="cr">钢魂烈斗 STEEL SOUL<br><br>机体设计 · 赤焰魂 苍月 铁拳 影刃 雷神 柠檬狼 蔡俊祥 郑云鸿<br><br>最终 Boss · 暗皇·虚无 ZERO<br><br>感谢游玩！<br><br>钢之魂，永不熄灭。</div>
+    <div class="ttl">${first?'全剧情通关！':'再次击败暗皇！'}</div><div class="sub">${first?'暗皇·虚无被击碎，宇宙重获光明。<br>钢之魂，永不熄灭！':'虚无已无法阻挡你。'}</div>
+    <div class="rw">${items.map((it,i)=>`<div class="it ${it[3]||''}" style="animation-delay:${1+i*.35}s"><b>${it[0]}</b><span>${it[1]}</span><small>${it[2]}</small></div>`).join('')}</div>
+    <button id="endOk">收下奖励 ▶</button>`;
+  d.style.display='flex'; if(AC){ SFX.chime(); setTimeout(()=>{ if(AC) SFX.boom(1.6); },1000); } impactFrame('#d040ff','');
+  $('endOk').onclick=()=>{ d.style.display='none'; d.innerHTML=''; done&&done(); }; }
+const _campResult0=campResult; campResult=function(win){ const c=chapById(FLOW.chap);
+  if(win&&c&&c.id===10){ const first=!SAVE.voidClear; if(first) grantVoidRewards(); else addCoins(100); saveGame(); showEnding(first,()=>_campResult0(win)); return; }
+  _campResult0(win); };
+const _toMenu0=toMenu; toMenu=function(){ _toMenu0(); if(SAVE.voidClear&&$('menuWho')) $('menuWho').innerHTML='🏆 <b style="color:#d040ff">虚无终结者</b> · '+$('menuWho').textContent; };
+const _auraTick0=auraTick; auraTick=function(){ _auraTick0(); const sk=skinOf(CUR); if(sk.id==='void'&&(APP.state==='game'||APP.state==='select')&&Math.random()<.35){ const c=curChestW(new THREE.Vector3()).add(new THREE.Vector3((Math.random()-.5)*2.6,(Math.random()-.6)*3,(Math.random()-.5)*2.6)); voidPuff(c,.6,.8); } };
+refreshBonuses();
+
 function animate(){
   requestAnimationFrame(animate);
   const rdt=Math.min(clock.getDelta(),.05), t=clock.elapsedTime; let dt=rdt;
