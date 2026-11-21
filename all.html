@@ -183,14 +183,13 @@
   <div class="row" data-only="blaze"><div class="lab">赤焰涂装<small id="paintInfo"></small></div><button id="sPaint">🎨 切换</button></div>
   <div class="row" data-only="single"><div class="lab">训练机器人</div><button id="sReset">🤖 重置</button></div>
   <div class="row" data-only="single"><div class="lab">录制展示视频<small>自动演完当前机体全部招式</small></div><button id="sRec">🎬 开始录制</button></div>
-  <div class="row"><div class="lab">第二关 Boss</div><select id="bossSel2" style="background:#111;color:#fff;border:1px solid #ff6a3a;border-radius:8px;padding:5px 8px"></select></div>
   <div class="row"><div class="lab">存档<small>进度保存在这台设备的浏览器里</small></div><button id="sWipe">🗑 清除存档</button></div>
 </div>
 <div id="rewPanel" class="panel"><h3>🏆 奖励 <button class="x" data-close="rewPanel">✕</button></h3><div class="stats" id="statBox"></div><div id="achList"></div></div>
 <div id="helpPanel" class="panel"><h3>📖 玩法说明 <button class="x" data-close="helpPanel">✕</button></h3>
   <div style="font-size:14px;line-height:1.8">
   <b>单人模式</b>：自由练习，点底部“⚔️ 招式”选择要放的招，训练机器人会显示伤害。<br>
-  <b>闯关模式</b>：第一关打倒 6 台小兵，第二关打倒 Boss（可在设置里选 Boss）。<br>
+  <b>闯关模式</b>：7 章主线 + 2 章番外。每章有剧情、好几波敌军（暗星兵 / 疾袭兵 / 重装兵）和 Boss，按剩余血量拿 1～3 星和币。<br><b>皮肤</b>：选英雄时可用币买 黄金 / 暗夜 / 极光 皮肤，特效颜色会跟着变；集齐收藏全套免费送黄金。<br>
   <b>手机操作</b>：左下摇杆移动（推到底奔跑），右下按钮放招式和跳跃。<br>
   <b>键盘操作</b>：WASD/方向键移动 · Shift 奔跑 · 空格 跳 · F 普攻 · J/K/L 三个招式。<br>
   <b>EN 能量</b>：放招会消耗蓝色 EN，会慢慢回复；合体技需要 150 EN。<br>
@@ -2753,7 +2752,7 @@ function syncSettings(){ document.querySelectorAll('#segBgm button').forEach(b=>
   $('vol').value=SAVE.vol; $('paintInfo').textContent='当前：'+PAINTS[paintIdx].name+' · 已解锁 '+PAINTS.filter((p,i)=>paintUnlocked(i)).length+'/'+PAINTS.length;
   const inSingle=APP.state==='game'&&MODE==='show';
   document.querySelectorAll('#setPanel [data-only]').forEach(r=>{ const o=r.dataset.only; r.style.display=(o==='single'&&!inSingle)||(o==='blaze'&&CUR!=='blaze')?'none':''; });
-  const bs=$('bossSel2'); if(!bs.options.length) bs.innerHTML=$('bossSel').innerHTML; bs.value=LV.bossKey||'dark';
+  const bs=$('bossSel2'); if(bs){ if(!bs.options.length) bs.innerHTML=$('bossSel').innerHTML; bs.value=LV.bossKey||'dark'; }
 }
 function openSettings(){ closePanels(); syncSettings(); $('setPanel').classList.add('show'); }
 document.querySelectorAll('#segQ button').forEach(b=>b.onclick=()=>{ applyQuality(b.dataset.q); syncSettings(); });
@@ -2765,7 +2764,7 @@ $('sSfx').onclick=()=>{ initAudio(); renderSfxList(); $('setPanel').classList.re
 $('sPaint').onclick=()=>{ let i=paintIdx; do{ i=(i+1)%PAINTS.length; }while(!paintUnlocked(i)); paintIdx=i; applyPaint(PAINTS[i]); SAVE.paint=i; saveGame(); syncSettings(); };
 $('sReset').onclick=()=>{ $('bReset').onclick(); };
 $('sRec').onclick=()=>{ closePanels(); startRec(); };
-$('bossSel2').onchange=e=>{ LV.bossKey=e.target.value; $('bossSel').value=e.target.value; };
+if($('bossSel2')) $('bossSel2').onchange=e=>{ LV.bossKey=e.target.value; $('bossSel').value=e.target.value; };
 let wipeArm=false; $('sWipe').onclick=e=>{ if(!wipeArm){ wipeArm=true; e.target.textContent='⚠️ 再点一次确认'; return; }
   try{ localStorage.removeItem(SAVE_KEY); }catch(_){} Object.assign(SAVE,{dmg:0,maxHit:0,kills:0,dummyKills:0,bossKills:0,combos:0,specials:0,heroes:[],wins:0,ach:[],paint:0}); paintIdx=0; applyPaint(PAINTS[0]); saveGame(); wipeArm=false; e.target.textContent='🗑 清除存档'; syncSettings(); };
 $('bPaint').onclick=()=>$('sPaint').onclick();
@@ -2784,7 +2783,7 @@ function coverCam(dt){ theta=APP.state==='stage'?.7:.55; if(APP.state==='stage')
 // restore saved paint & start state
 if(paintUnlocked(SAVE.paint)){ paintIdx=SAVE.paint; applyPaint(PAINTS[paintIdx]); }
 $('ctrl').style.display='none'; $('hud').style.display='none'; $('tip').style.display='none'; dummyRoot.visible=false;
-const bs0=$('bossSel'); bs0.addEventListener('change',()=>{ $('bossSel2').value=bs0.value; });
+const bs0=$('bossSel'); bs0.addEventListener('change',()=>{ if($('bossSel2')) $('bossSel2').value=bs0.value; });
 // ================= 钢魂烈斗 STEEL SOUL — v2 shell: poster cover, hero & stage select, elemental stages, collection =================
 const GAME_NAME='钢魂烈斗', GAME_EN='STEEL SOUL';
 const ELEM={blaze:'火',saber:'光',goliath:'钢',shade:'暗',volt:'雷',lemonwolf:'冰',junxiang:'音',yunhong:'音'};
