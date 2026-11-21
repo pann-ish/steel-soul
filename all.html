@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="钢魂烈斗">
 <meta name="mobile-web-app-capable" content="yes">
-<title>钢魂烈斗 STEEL SOUL 全解锁版 · 原创热血机甲</title>
+<title>钢魂烈斗 STEEL SOUL 全解锁版</title>
 <style>
   html,body{margin:0;height:100%;background:#0b0808;overflow:hidden;font-family:"PingFang SC","Microsoft YaHei",sans-serif;color:#fff}
   canvas{display:block;touch-action:none}
@@ -1546,6 +1546,8 @@ function pickTarget(){
   else { TGT=DZ; TGTY=2.3; }
   WALK.amp=0;
 }
+function gcT(p){ try{ if(window.goatcounter&&goatcounter.count) goatcounter.count({path:(typeof UNLOCK_ALL!=='undefined'&&UNLOCK_ALL?'全解锁-':'')+p,title:p,event:true}); }catch(e){} }
+const BLAZE_MV={kick:'烈焰飞踢',drill:'螺旋钻击',green:'千钻爆发',super:'天穿巨钻',combo:'雷炎螺旋钻'};
 function tryMove(type){
   if(busy()) return;
   if(MODE==='level'){
@@ -1554,6 +1556,7 @@ function tryMove(type){
     // auto-target nearest enemy and face it
     pickTarget();
   } else { TGT=DZ; TGTY=2.3; }
+  gcT('招式/赤焰/'+(BLAZE_MV[type]||type));
   if(type==='combo'){ comboT=0; statAdd('combos'); } else if(type==='kick') kickT=0; else if(type==='drill') atkT=0; else if(type==='green') gT=0; else if(type==='super') supT=0;
 }
 // ---- enemy robots ----
@@ -2502,7 +2505,7 @@ function heroTry(i){
   const H=HEROES[CUR], mv=H.moves[i]; if(!mv||busy()) return;
   if(MODE==='level'){ if(PL.dead||LV.state!=='fight') return; if(OV.en<mv.cost){ toast('EN 不足！'); return; } pickTarget(); }
   else { TGT=DZ; TGTY=2.3; }
-  if(/^合体/.test(mv.name)) statAdd('combos'); useEN(mv.cost); HM.on=true; HM.move=mv; HM.T=0; HM.D={}; H.h.root.position.set(0,0,0);
+  if(/^合体/.test(mv.name)) statAdd('combos'); useEN(mv.cost); gcT('招式/'+H.name+'/'+mv.name); HM.on=true; HM.move=mv; HM.T=0; HM.D={}; H.h.root.position.set(0,0,0);
   if(mv.cut) startCut(mv.cut[0],mv.cut[1],CUR==='lemonwolf'||CUR==='shade'?false:false);
 }
 function endHeroMove(){ const H=HEROES[CUR]; if(HM.move&&HM.move.end) HM.move.end(H.h,HM.D); HM.on=false; HM.move=null; shot=null; TGTOFF.y=0; TGTOFF.pull=0;
@@ -2747,7 +2750,7 @@ function toMenu(){
 }
 function markHero(){ if(!SAVE.heroes.includes(CUR)){ SAVE.heroes.push(CUR); statDirty=true; } }
 function startSingle(){ heroColorVars(); applySkin(CUR); playTrack(FLOW.stage||'space'); markHero(); restoreScene(); applyStage(FLOW.stage); closePanels(); FLOW.mode='single'; APP.state='game'; showScreen(null); enterLevel(); gameUI(true); syncSettings(); }
-function startCampaign(){ heroColorVars(); applySkin(CUR); playTrack(FLOW.stage||'space'); markHero(); restoreScene(); applyStage(FLOW.stage); closePanels(); APP.state='game'; showScreen(null); enterLevel(); gameUI(true); }
+function startCampaign(){ gcT('出战/'+HEROES[CUR].name); gcT(FLOW.mode==='single'?'开始/训练场':'闯关开始/第'+FLOW.chap+'章'); heroColorVars(); applySkin(CUR); playTrack(FLOW.stage||'space'); markHero(); restoreScene(); applyStage(FLOW.stage); closePanels(); APP.state='game'; showScreen(null); enterLevel(); gameUI(true); }
 // cover → menu
 $('ldTxt').textContent='';
 $('cover').addEventListener('click',()=>{ if(APP.state!=='cover'||document.getElementById('loadScr').classList.contains('hide')===false) return; initAudio(); enterSFX(); enterTransition(()=>{},1400,'正在进入游戏…'); playTrack('title'); musPreload(['select',FLOW.stage||'space']); HEROES.saber.h.ext.len=0; HEROES.lemonwolf.h.ext.jawOpen=0; BG0.setHex(0x02030a); restoreScene(); showOnly(SAVE.hero&&HEROES[SAVE.hero]?SAVE.hero:'blaze'); updateMoveUI(); applyStage(FLOW.stage); APP.state='menu'; showScreen('menu'); toMenu(); });
@@ -3515,7 +3518,7 @@ function renderSkins(){ const row=$('hsSkins'); if(!row) return; const k=CUR; co
   row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ initAudio(); const id=b.dataset.sk, s=SKINS.find(x=>x.id===id);
     if(!skinOwned(k,id)&&s.reward){ $('hsMoves').textContent='🌌 虚无皮肤：在闯关终章击败「暗皇·虚无 ZERO」后，全机体解锁。'; if(AC) SFX.clank(); return; }
     if(!skinOwned(k,id)){ if((SAVE.coins|0)<s.price){ $('hsMoves').textContent=`🪙 币不够！${s.name}皮肤要 ${s.price} 币，去闯关或扭蛋赚币吧。`; if(AC) SFX.clank(); return; }
-      SAVE.coins-=s.price; (SAVE.skins[k]=SAVE.skins[k]||[]).push(id); $('hsMoves').textContent=`✨ 购买成功：${HEROES[k].name}「${s.name}」皮肤！特效也会变成${s.name}色。`; if(AC){ SFX.chime(); } }
+      SAVE.coins-=s.price; (SAVE.skins[k]=SAVE.skins[k]||[]).push(id); gcT('买皮肤/'+HEROES[k].name+'/'+s.name); $('hsMoves').textContent=`✨ 购买成功：${HEROES[k].name}「${s.name}」皮肤！特效也会变成${s.name}色。`; if(AC){ SFX.chime(); } }
     SAVE.skin[k]=id; saveGame(); applySkin(k); heroColorVars(); renderSkins(); startEntrance(k,'select'); }); }
 // ================= REAL CAMPAIGN =================
 const ETYPE={g:{name:'暗星兵',sc:.92,hp:650,spd:3.6,dmg:140,wind:.55,cd:1.8,r:1.05},
@@ -3587,7 +3590,7 @@ function showStory(c,done){ const box=$('storyBox'), bars=$('storyBars'); let i=
   box.onclick=e=>{ if(e.target.classList.contains('skip')){ finish(); return; } const el=box.querySelector('.tx'), full=c.story[i][1]; if(el.textContent.length<full.length){ clearInterval(typing); el.textContent=full; return; } i++; if(i>=c.story.length) finish(); else show(); };
   show(); }
 function campResult(win){ const c=chapById(FLOW.chap)||CHAPTERS[0]; const r=$('campRes'); let stars=0, coins=0, first=false;
-  if(win){ const hp=PL.hp/PL.max; stars=hp>=.6?3:hp>=.3?2:1; first=!SAVE.camp[c.id]; SAVE.camp[c.id]=Math.max(SAVE.camp[c.id]|0,stars); coins=10+stars*5+(first?20:0); addCoins(coins); statAdd('wins'); saveGame(); checkAch(); }
+  if(win) gcT('闯关通过/第'+c.id+'章'); if(win){ const hp=PL.hp/PL.max; stars=hp>=.6?3:hp>=.3?2:1; first=!SAVE.camp[c.id]; SAVE.camp[c.id]=Math.max(SAVE.camp[c.id]|0,stars); coins=10+stars*5+(first?20:0); addCoins(coins); statAdd('wins'); saveGame(); checkAch(); }
   const nx=chapById(c.id+1); const nxOpen=nx&&chapOpen(nx)&&!nx.need;
   r.innerHTML=`<div class="box"><h3 style="color:${win?'#ffd23a':'#ff5a4a'}">${win?'MISSION COMPLETE':'MISSION FAILED'}</h3><div>第 ${c.id} 章 · ${c.name}</div>
     ${win?`<div class="stars">${[0,1,2].map(i=>`<span style="animation-delay:${.2+i*.25}s">${i<stars?'★':'☆'}</span>`).join('')}</div><div class="rw">${c.win}<br>🪙 +${coins} 币${first?'（含首次通关 +20）':''}</div>`:`<div class="rw" style="margin-top:12px">${HEROES[CUR].name}被击倒了……再试一次吧！<br>小技巧：先用普攻攒 EN，再放大招。</div>`}
@@ -3789,7 +3792,7 @@ const ULTS={
 function tryUlt(i){ if(busy()||ENTRY.t>=0||BASIC.t>=0&&BASIC.t<.1) return; const k=CUR, mv=ULTS[k][i];
   if(!ultOwned(k,i)){ toast('先在选英雄画面解锁「'+mv.name+'」！'); return; }
   if(MODE==='level'){ if(PL.dead||LV.state!=='fight') return; if(OV.en<mv.cost){ toast('EN 不足！需要 '+mv.cost); return; } pickTarget(); } else { TGT=DZ; TGTY=2.3; }
-  BASIC.t=-1; const r=entRoot(k); r.position.set(0,0,0); r.rotation.set(0,0,0); useEN(mv.cost); ULT.on=true; ULT.k=k; ULT.mv=mv; ULT.T=0; ULT.D={}; startCut(mv.cut[0],mv.cut[1]); }
+  BASIC.t=-1; gcT('大招/'+HEROES[k].name+'/'+mv.name); const r=entRoot(k); r.position.set(0,0,0); r.rotation.set(0,0,0); useEN(mv.cost); ULT.on=true; ULT.k=k; ULT.mv=mv; ULT.T=0; ULT.D={}; startCut(mv.cut[0],mv.cut[1]); }
 function ultTick(dt){ if(!ULT.on) return; if(ULT.k!==CUR){ endUlt(); return; } if(cutFreeze()){ ULT.dt=0; return; } ULT.dt=dt; ULT.T+=dt; if(ULT.T>=ULT.mv.dur) endUlt(); }
 function ultPose(P){ if(!ULT.on||!ULT.dt) return; ULT.mv.run(ULT.T,ULT.dt,P,entRoot(ULT.k),ULT.D); }
 function endUlt(){ if(!ULT.on) return; const R=entRoot(ULT.k); try{ if(ULT.mv.end) ULT.mv.end(ULT.D); }catch(e){} R.position.set(0,0,0); R.rotation.set(0,0,0); R.scale.setScalar(1); R.visible=(ULT.k===CUR); ULT.on=false; ULT.mv=null; shot=null; TGTOFF.y=0; }
@@ -3797,7 +3800,7 @@ function renderUltRow(){ const row=$('hsUlt'); if(!row) return; const k=CUR;
   row.innerHTML=ULTS[k].map((mv,i)=>{ const own=ultOwned(k,i); return `<button data-u="${i}" class="${own?'own':''}">${i?'🌟 奥义必杀':'🔥 极必杀'}<small>${own?'已解锁':'🔒 '+ULT_PRICE[i]+' 币解锁'}</small></button>`; }).join('');
   row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ initAudio(); const i=+b.dataset.u, mv=ULTS[k][i]; if(ultOwned(k,i)){ $('hsMoves').textContent=`${i?'🌟 奥义必杀':'🔥 极必杀'}已解锁，战斗中按右侧大按钮发动（消耗 EN ${mv.cost}）。`; return; }
     if((SAVE.coins|0)<ULT_PRICE[i]){ $('hsMoves').textContent=`🪙 币不够！解锁${i?'奥义必杀':'极必杀'}需要 ${ULT_PRICE[i]} 币。闯关、打训练机器人都能赚币。`; if(AC) SFX.clank(); return; }
-    SAVE.coins-=ULT_PRICE[i]; SAVE.ult[k]=SAVE.ult[k]||[0,0]; SAVE.ult[k][i]=1; saveGame(); $('hsMoves').textContent=`✨ 解锁成功！${HEROES[k].name} 学会了${i?'奥义必杀':'极必杀'}！`; if(AC){ SFX.chime(); SFX.boom(1); } impactFrame(entColors(k)[0],i?'奥义！！':'极必杀！！'); renderUltRow(); renderSkins(); }); }
+    SAVE.coins-=ULT_PRICE[i]; SAVE.ult[k]=SAVE.ult[k]||[0,0]; SAVE.ult[k][i]=1; gcT('解锁大招/'+HEROES[k].name+'/'+ULTS[k][i].name); saveGame(); $('hsMoves').textContent=`✨ 解锁成功！${HEROES[k].name} 学会了${i?'奥义必杀':'极必杀'}！`; if(AC){ SFX.chime(); SFX.boom(1); } impactFrame(entColors(k)[0],i?'奥义！！':'极必杀！！'); renderUltRow(); renderSkins(); }); }
 (function(){ const st=document.createElement('style'); st.textContent=`
 #hsUlt{display:flex;gap:6px;justify-content:center;margin:0 0 6px;flex:0 0 auto;padding:0 8px}
 #hsUlt button{font-size:12px;font-weight:900;padding:6px 10px;border-radius:10px;background:linear-gradient(160deg,#3a1a0a,#120806);border:2px dashed rgba(255,160,60,.5);color:#ffd9a0;display:flex;flex-direction:column;align-items:center;line-height:1.2;max-width:48vw}
@@ -3881,7 +3884,7 @@ function tryDodge(){ if(MODE!=='level'||APP.state!=='game'||PL.dead||LV.state!==
   if(rate){ DODGE.win=0; DODGE.e=best; DODGE.rate=rate; best.stun=Math.max(best.stun||0,1.6); best.state='chase'; best.atkCd=2; slowMo(.9); $('slowTint').style.display='block';
     showRate(rate,RATE[rate].sub,'⚡ 点击 攻击/闪避 反击！'); if(AC){ SFX.chime(); HSFX.zap(.5); } const btn=document.querySelector('#abtns button[data-a=dodge]'); if(btn) btn.classList.add('counter'); }
 }
-function doCounter(){ const e=DODGE.e, rate=DODGE.rate; endCounterWin(); if(!e||e.dead) return; const tl=DODGE.tw||0; let rr=rate; if(tl>.55&&rr==='PERFECT') rr='GREAT'; if(tl>.8) rr='GOOD';
+function doCounter(){ gcT('躲避反击/'+DODGE.rate); const e=DODGE.e, rate=DODGE.rate; endCounterWin(); if(!e||e.dead) return; const tl=DODGE.tw||0; let rr=rate; if(tl>.55&&rr==='PERFECT') rr='GREAT'; if(tl>.8) rr='GOOD';
   DODGE.count++; statAdd('specials');
   // blink behind the attacker
   const fx=Math.sin(e.yaw), fz=Math.cos(e.yaw); rig.position.x=e.x-fx*(e.r+1.8); rig.position.z=e.z-fz*(e.r+1.8); rig.rotation.y=Math.atan2(e.x-rig.position.x,e.z-rig.position.z); LV.target=e; TGT=Math.max(3.4,e.r+1.4); TGTY=Math.min(e.hitY,4.5);
@@ -3988,7 +3991,7 @@ SKINS.push({id:'void',name:'虚无',price:0,reward:true,main:0x1c0a2a,sub:0x0503
 const _skinOwned0=skinOwned; skinOwned=function(k,id){ if(id==='void') return UNLOCK_ALL||!!SAVE.voidClear; return _skinOwned0(k,id); };
 ACH.push({id:'voidk',ic:'🌌',name:'虚无终结者',desc:'击败最终 Boss 暗皇·虚无 ZERO',goal:()=>[SAVE.voidClear?1:0,1],rw:'虚无皮肤 + 称号'});
 const _refreshBonuses0=refreshBonuses; refreshBonuses=function(){ _refreshBonuses0(); if(SAVE.voidClear||UNLOCK_ALL) OV.enMax+=50; };
-function grantVoidRewards(){ SAVE.voidClear=true; addCoins(500); ALLH.forEach(k=>{ SAVE.ult[k]=SAVE.ult[k]||[0,0]; SAVE.ult[k][0]=1; }); if(!SAVE.ach.includes('voidk')) SAVE.ach.push('voidk'); refreshBonuses(); OV.en=OV.enMax; saveGame(); }
+function grantVoidRewards(){ gcT('打败最终Boss'); SAVE.voidClear=true; addCoins(500); ALLH.forEach(k=>{ SAVE.ult[k]=SAVE.ult[k]||[0,0]; SAVE.ult[k][0]=1; }); if(!SAVE.ach.includes('voidk')) SAVE.ach.push('voidk'); refreshBonuses(); OV.en=OV.enMax; saveGame(); }
 (function(){ const st=document.createElement('style'); st.textContent=`
 #endingScr{position:fixed;inset:0;z-index:150;display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#2a0a4a,#07040c 70%);color:#fff;font-family:"PingFang SC","Microsoft YaHei",sans-serif;text-align:center}
 #endingScr .stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 70% 30%,#fff,transparent),radial-gradient(2px 2px at 40% 70%,#ffd23a,transparent),radial-gradient(1px 1px at 85% 80%,#fff,transparent),radial-gradient(1px 1px at 25% 85%,#fff,transparent);opacity:.8}
@@ -4317,6 +4320,7 @@ loadScreen(true,'载入完成！',100); setTimeout(()=>loadScreen(false),600);
 addEventListener('resize',()=>{ if(rec) return; fitCamera(); renderer.setSize(innerWidth,innerHeight); composerBloom&&composerBloom.setSize(innerWidth,innerHeight);});
 fitCamera();
 </script>
+<script data-goatcounter="https://steelsoul.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <script>
 function pwaToast(t,ms){ const d=document.createElement('div'); d.textContent=t; d.style.cssText='position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:99;background:#ff5a1f;color:#fff;padding:9px 16px;border-radius:14px;font-weight:800;max-width:88vw;text-align:center;font-size:14px'; document.body.appendChild(d); setTimeout(()=>d.remove(),ms||3500); }
 (function(){ if(!('serviceWorker' in navigator)||location.protocol==='file:') return;
