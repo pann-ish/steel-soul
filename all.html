@@ -37,6 +37,27 @@
 </style>
 </head>
 <body>
+<style>@keyframes spin{to{transform:rotate(360deg)}}#loadScr{position:fixed;inset:0;z-index:200;overflow:hidden;background:radial-gradient(ellipse 70% 45% at 50% 52%,#ff5a1f 0%,#8a1a06 38%,#1a0604 72%,#07070c 100%);color:#fff;font-family:"PingFang SC","Microsoft YaHei",sans-serif;transition:opacity .45s;display:flex;flex-direction:column;align-items:center}
+#loadScr.hide{opacity:0;pointer-events:none}
+#loadScr .lines{position:absolute;left:50%;top:52%;width:240vmax;height:240vmax;margin:-120vmax 0 0 -120vmax;background:repeating-conic-gradient(from 0deg,rgba(255,210,58,.22) 0deg 1.2deg,transparent 1.2deg 7deg);animation:spin 40s linear infinite}
+#loadScr .fade{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(0deg,#07070c 30%,transparent)}
+#loadScr .top{position:relative;margin-top:max(7vh,env(safe-area-inset-top));text-align:center}
+#loadScr .top p{margin:0;font-size:clamp(12px,3.2vw,18px);letter-spacing:.5em;color:#ffd23a;font-weight:900}
+#loadScr h1{margin:.1em 0 0;font-size:clamp(64px,21vw,150px);line-height:1;font-weight:900;font-style:italic;letter-spacing:.04em;text-shadow:0 0 30px #ff5a1f,6px 6px 0 #ff5a1f,11px 11px 0 #07070c}
+#loadScr .en{font-size:clamp(24px,8.5vw,60px);font-weight:900;letter-spacing:.3em;color:#ffd23a;text-shadow:0 4px 0 #07070c;font-family:Impact,"Arial Black",sans-serif}
+#loadScr svg{position:absolute;left:50%;top:30%;height:62%;transform:translateX(-50%)}
+#loadScr .bot{position:absolute;left:6%;right:6%;bottom:max(6vh,env(safe-area-inset-bottom));text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+#loadScr .tag{font-size:clamp(28px,8.5vw,56px);font-weight:900;font-style:italic;text-shadow:0 0 18px #ff5a1f}
+#loadScr .bar{width:min(520px,88vw);height:10px;border:2px solid #ffd23a;border-radius:999px;overflow:hidden;background:rgba(0,0,0,.5)}
+#loadScr .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5a1f,#ffd23a,#fff);transition:width .35s}
+#loadScr .st{font-size:13px;letter-spacing:.2em;color:#ffe8d0}
+#loadScr .tip{font-size:13px;color:#ffd9b0;opacity:.9;max-width:88vw}
+</style><div id="loadScr"><div class="lines"></div><svg viewBox="0 0 400 640" aria-hidden="true"><defs><linearGradient id="ldB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a1410"/><stop offset="1" stop-color="#0c0606"/></linearGradient><linearGradient id="ldD" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffd23a"/><stop offset=".5" stop-color="#ff7a1a"/><stop offset="1" stop-color="#a02a0a"/></linearGradient></defs>
+<g fill="url(#ldB)" stroke="#ff7a2a" stroke-width="2.2" stroke-linejoin="round"><polygon points="150,330 188,330 194,470 182,566 128,566 138,470"/><polygon points="212,330 250,330 262,470 272,566 218,566 206,470"/><rect x="118" y="556" width="74" height="26" rx="8"/><rect x="208" y="556" width="74" height="26" rx="8"/><rect x="142" y="296" width="116" height="44" rx="10"/><polygon points="118,168 282,168 268,302 132,302"/><rect x="74" y="150" width="78" height="66" rx="20"/><rect x="248" y="150" width="78" height="66" rx="20"/><polygon points="84,210 120,214 112,330 92,332"/><rect x="82" y="326" width="40" height="40" rx="10"/><polygon points="282,186 316,170 352,74 328,62"/><circle cx="200" cy="118" r="40"/></g>
+<path d="M150 92 Q200 30 250 92 Q200 62 150 92 Z" fill="#ffd23a"/><rect x="172" y="112" width="56" height="12" rx="6" fill="#3fe0ff"/><circle cx="200" cy="222" r="22" fill="#ffb030"/><circle cx="200" cy="222" r="11" fill="#fff6d0"/>
+<g transform="rotate(20 340 60)"><polygon points="314,70 366,70 340,-120" fill="url(#ldD)" stroke="#fff3b0" stroke-width="2"/><path d="M318 52 L362 40 M322 22 L358 10 M326 -8 L354 -20 M330 -38 L350 -50" stroke="#7a1a00" stroke-width="7" stroke-linecap="round"/></g></svg>
+<div class="fade"></div><div class="top"><p>原创热血机甲动作</p><h1>钢魂烈斗</h1><div class="en">STEEL SOUL</div></div>
+<div class="bot"><div class="tag">燃烧吧，钢之魂！</div><div class="bar"><i style="width:20%"></i></div><div class="st">载入中…</div><div class="tip"></div></div></div>
 <div id="hud"><h1>赤焰魂 BLAZE-01</h1><p>原创热血系机甲 · 涂装：赤焰</p></div>
 <div id="tip">拖动旋转 · 滚轮/双指缩放</div>
 <div id="flash"></div>
@@ -161,7 +182,7 @@
 <div id="menu" class="scr">
   <h2>钢魂烈斗</h2>
   <div class="who" id="menuWho">当前机体：赤焰魂 BLAZE-01</div>
-  <button class="mbtn" data-go="campaign"><i>🏁</i><span>闯关模式<small>7 章主线 + 2 章番外 · 剧情、多波敌军与 Boss</small></span></button>
+  <button class="mbtn" data-go="campaign"><i>🏁</i><span>闯关模式<small>7 章主线 + 终章 + 2 章番外 · 剧情、多波敌军与 Boss</small></span></button>
   <button class="mbtn" data-go="single"><i>🥊</i><span>单人模式 · 训练场<small>自由移动，对着训练机器人练招、赚币</small></span></button>
   <button class="mbtn" data-go="rewards"><i>🏆</i><span>奖励模式<small>成就、战绩与解锁涂装</small></span></button>
   <button class="mbtn" data-go="settings"><i>⚙️</i><span>设置<small>画质、视角、音效</small></span></button>
@@ -1563,13 +1584,14 @@ function spawnEnemy(boss,type='g'){
   const C=(typeof chapById==='function'&&chapById(FLOW.chap))||null, lvl=C?C.id:1, mul=1+(lvl-1)*.12;
   const a=Math.random()*Math.PI*2, R=boss?14:12+Math.random()*8;
   let x=rig.position.x+Math.sin(a)*R, z=rig.position.z+Math.cos(a)*R; const m=Math.hypot(x,z); if(m>DECK_R-4){ x*=(DECK_R-4)/m; z*=(DECK_R-4)/m; }
-  const hk=boss&&LV.bossKey&&LV.bossKey!=='dark'?LV.bossKey:null; const T=ETYPE[type]||ETYPE.g; const sc=hk?1.55:(boss?2.1:T.sc), bot=hk?makeHeroBot(hk):makeBot(sc,boss);
+  const hk=boss&&LV.bossKey&&HEROES[LV.bossKey]?LV.bossKey:null; const isVoid=boss&&LV.bossKey==='void'; const T=ETYPE[type]||ETYPE.g; const sc=hk?1.55:isVoid?2.5:(boss?2.1:T.sc), bot=hk?makeHeroBot(hk):isVoid?makeVoidBoss():makeBot(sc,boss);
   if(hk){ const hm=bot.hero.m; hm.main.color.multiplyScalar(.32); hm.sub.color.setHex(0x1a0a14); hm.glow.color.setHex(0xff2a3a); hm.glow.emissive.setHex(0xff2a3a); }
   else if(!boss&&T.body){ bot.mats.body.color.setHex(T.body); bot.mats.acc.color.setHex(T.acc); }
   const bhp=Math.round(12000*(C?C.bhp:1)), hp=boss?bhp:Math.round(T.hp*mul);
   const e={...bot,boss,etype:type,x,z,yaw:0,vx:0,vz:0,r:boss?2.1:T.r,mass:boss?4:(type==='h'?2.2:1),hp,max:hp,disp:hp,speed:boss?2.6:T.spd,range:boss?4.6:2.7*(T.r/1.05),
-    dmg:Math.round((boss?460:T.dmg)*(boss?Math.max(.7,C?C.bhp:1):mul)),windT:boss?.8:T.wind,cd:boss?1.9:T.cd,atkCd:1+Math.random(),state:'chase',t:0,flash:0,dead:false,deathT:0,walk:Math.random()*6,hitY:hk?4.0*sc:(boss?2.3:2.2)*sc,spawnT:0,stompCd:4,bsc:sc,
+    dmg:Math.round((boss?460:T.dmg)*(boss?Math.min(1.6,Math.max(.7,C?C.bhp:1)):mul)),windT:boss?.8:T.wind,cd:boss?1.9:T.cd,atkCd:1+Math.random(),state:'chase',t:0,flash:0,dead:false,deathT:0,walk:Math.random()*6,hitY:hk?4.0*sc:(boss?2.3:2.2)*sc,spawnT:0,stompCd:4,bsc:sc,
     bname:hk?(C&&C.boss===hk?C.bname:HEROES[hk].name+' '+HEROES[hk].en):(C?C.bname:'暗星统领')};
+  if(isVoid){ e.void=true; e.r=2.6; e.hitY=2.3*2.5; e.wings=bot.wings; e.core=bot.core; }
   e.g.position.set(x,0,z); LV.enemies.push(e); LV.spawned++;
   emit(new THREE.Vector3(x,.2,z),new THREE.Vector3(0,1,0),24,.2,boss?0xd060ff:0xff8040); SFX.whoosh(.5,false,.5);
   return e;
@@ -1674,6 +1696,7 @@ function levelTick(dt,rdt){
     e.stun=Math.max(0,(e.stun||0)-dt); e.atkCd-=dt; e.stompCd-=dt; if(e.train) e.atkCd=99;
     const dx=rig.position.x-e.x, dz=rig.position.z-e.z, d=Math.hypot(dx,dz); const want=Math.atan2(dx,dz);
     let moving=false; let armUp=0;
+    if(e.void&&!e.dead&&!enemyFrozen&&!PL.dead&&LV.state==='fight'&&voidTick(e,dt,d)){ e.g.position.set(e.x,e.g.position.y,e.z); e.g.rotation.y=e.yaw; return; }
     if(!enemyFrozen && !PL.dead && e.stun<=0 && LV.state==='fight'){
       if(e.state==='chase'){ let dy=want-e.yaw; dy=Math.atan2(Math.sin(dy),Math.cos(dy)); e.yaw+=dy*Math.min(1,dt*5);
         if(d>e.range+PL.r-.6){ e.x+=Math.sin(e.yaw)*e.speed*(STAGES[STAGE].espd||1)*dt; e.z+=Math.cos(e.yaw)*e.speed*(STAGES[STAGE].espd||1)*dt; moving=true; }
@@ -2727,7 +2750,7 @@ function startSingle(){ heroColorVars(); applySkin(CUR); playTrack(FLOW.stage||'
 function startCampaign(){ heroColorVars(); applySkin(CUR); playTrack(FLOW.stage||'space'); markHero(); restoreScene(); applyStage(FLOW.stage); closePanels(); APP.state='game'; showScreen(null); enterLevel(); gameUI(true); }
 // cover → menu
 $('ldTxt').textContent='';
-$('cover').addEventListener('click',()=>{ initAudio(); enterSFX(); playTrack('title'); musPreload(['select',FLOW.stage||'space']); HEROES.saber.h.ext.len=0; HEROES.lemonwolf.h.ext.jawOpen=0; BG0.setHex(0x02030a); restoreScene(); showOnly(SAVE.hero&&HEROES[SAVE.hero]?SAVE.hero:'blaze'); updateMoveUI(); applyStage(FLOW.stage); APP.state='menu'; showScreen('menu'); toMenu(); });
+$('cover').addEventListener('click',()=>{ if(APP.state!=='cover'||document.getElementById('loadScr').classList.contains('hide')===false) return; initAudio(); enterSFX(); enterTransition(()=>{},1400,'正在进入游戏…'); playTrack('title'); musPreload(['select',FLOW.stage||'space']); HEROES.saber.h.ext.len=0; HEROES.lemonwolf.h.ext.jawOpen=0; BG0.setHex(0x02030a); restoreScene(); showOnly(SAVE.hero&&HEROES[SAVE.hero]?SAVE.hero:'blaze'); updateMoveUI(); applyStage(FLOW.stage); APP.state='menu'; showScreen('menu'); toMenu(); });
 document.querySelectorAll('#menu .mbtn').forEach(b=>b.addEventListener('click',()=>{ initAudio(); const g=b.dataset.go;
   if(g==='campaign') openCampMap(); else if(g==='single') openHeroSel('single'); else if(g==='collect') openCollection(); else if(g==='rewards') openRewards(); else if(g==='settings') openSettings(); else if(g==='hero') $('charPanel').style.display='block'; else if(g==='help') $('helpPanel').classList.add('show'); }));
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).classList.remove('show'));
@@ -2927,13 +2950,17 @@ function drawPoster(c,W,H){ if(APP.state!=='cover') return; const u=Math.min(W,H
   for(let i=0;i<70;i++){ const a=(i/70)*Math.PI*2+Math.random()*.05, r0=(Math.min(W,H)*.32)+Math.random()*60*u, r1=r0+(120+Math.random()*520)*u;
     c.strokeStyle=i%3?'rgba(255,255,255,.08)':col+'33'; c.lineWidth=(1+Math.random()*3)*u; c.beginPath(); c.moveTo(cx+Math.cos(a)*r0,cy+Math.sin(a)*r0); c.lineTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1); c.stroke(); }
   c.globalCompositeOperation='source-over';
-  // diagonal name band
-  const k=Math.min(1,t/.22), slide=(1-ease(k))*W*.6; const by=H*.68;
-  c.save(); c.translate(0,by); c.rotate(-.08); c.fillStyle='rgba(0,0,0,.6)'; c.fillRect(-20,-70*u,W+40,140*u); c.fillStyle=col; c.fillRect(-20,-74*u,W+40,6*u); c.fillRect(-20,70*u,W+40,4*u); c.restore();
-  c.textAlign='left'; c.font=`italic 900 ${Math.min(120*u,W*.2)}px "PingFang SC","Microsoft YaHei",sans-serif`; c.lineWidth=10*u; c.strokeStyle='#000';
-  const nx=W*.06+slide; c.strokeText(H0.name,nx,by+18*u); const gr=c.createLinearGradient(0,by-60*u,0,by+30*u); gr.addColorStop(0,'#fff'); gr.addColorStop(1,col); c.fillStyle=gr; c.fillText(H0.name,nx,by+18*u);
-  c.font=`italic 900 ${26*u}px Arial`; c.fillStyle='#fff'; c.fillText(H0.en+'  ·  '+H0.title,W*.07-slide*.6,by+58*u);
-  const el=ELEM[POSTER.key]; c.fillStyle=ELEMCOL[el]; c.font=`900 ${22*u}px "PingFang SC",sans-serif`; c.fillText('【'+el+'属性】',W*.07-slide*.6,by-52*u);
+  // name block: element badge + title, big name, english name — all inside one tilted band
+  const k=Math.min(1,t/.22), slide=(1-ease(k))*W*.6; const fs=Math.min(108*u,W*.17), bandH=fs+118*u, by=H*.7;
+  c.save(); c.translate(0,by); c.rotate(-.06); c.fillStyle='rgba(0,0,0,.66)'; c.fillRect(-20,-bandH/2,W+40,bandH); c.fillStyle=col; c.fillRect(-20,-bandH/2-5*u,W+40,6*u); c.fillRect(-20,bandH/2,W+40,4*u); c.restore();
+  const x0=W*.07-slide*.6, top=by-bandH/2+16*u;
+  const el=ELEM[POSTER.key], bt=el+'属性', bfs=19*u; c.font=`900 ${bfs}px "PingFang SC","Microsoft YaHei",sans-serif`; const bw=c.measureText(bt).width+26*u, bh=bfs+12*u;
+  c.fillStyle=ELEMCOL[el]; c.beginPath(); const rr=bh/2; c.moveTo(x0+rr,top); c.lineTo(x0+bw-rr,top); c.arc(x0+bw-rr,top+rr,rr,-Math.PI/2,Math.PI/2); c.lineTo(x0+rr,top+bh); c.arc(x0+rr,top+rr,rr,Math.PI/2,Math.PI*1.5); c.fill();
+  c.textAlign='left'; c.textBaseline='middle'; c.fillStyle='#111'; c.fillText(bt,x0+13*u,top+bh/2+1*u);
+  c.font=`800 ${18*u}px "PingFang SC","Microsoft YaHei",sans-serif`; c.fillStyle='#fff'; c.fillText(H0.title,x0+bw+12*u,top+bh/2+1*u);
+  c.textBaseline='alphabetic'; c.font=`italic 900 ${fs}px "PingFang SC","Microsoft YaHei",sans-serif`; c.lineWidth=10*u; c.strokeStyle='#000'; c.lineJoin='round';
+  const nx=W*.06+slide, ny=top+bh+fs*.92; c.strokeText(H0.name,nx,ny); const gr=c.createLinearGradient(0,ny-fs,0,ny); gr.addColorStop(0,'#fff'); gr.addColorStop(1,col); c.fillStyle=gr; c.fillText(H0.name,nx,ny);
+  c.font=`italic 900 ${22*u}px Arial`; c.fillStyle='#fff'; const en=H0.en.split('').join(String.fromCharCode(8202)); c.fillText(en,x0,ny+34*u);
   // flash on switch + vignette
   if(POSTER.flash>0){ c.fillStyle=`rgba(255,255,255,${POSTER.flash*.85})`; c.fillRect(0,0,W,H); }
   const vg=c.createRadialGradient(W/2,H/2,Math.min(W,H)*.3,W/2,H/2,Math.max(W,H)*.75); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.7)'); c.fillStyle=vg; c.fillRect(0,0,W,H);
@@ -3515,7 +3542,7 @@ const CHAPTERS=[
 ];
 SAVE.camp=SAVE.camp||{};
 const chapById=id=>CHAPTERS.find(c=>c.id===id);
-function chapOpen(c){ if(UNLOCK_ALL) return true; if(c.need) return heroUnlocked(c.need); return c.id===1||!!SAVE.camp[c.id-1]; }
+function chapOpen(c){ if(UNLOCK_ALL) return true; if(c.need) return heroUnlocked(c.need); if(c.req) return !!SAVE.camp[c.req]; return c.id===1||!!SAVE.camp[c.id-1]; }
 HIDDEN_RULE.junxiang={hint:'通关闯关模式第 3 章即可解锁',ok:()=>!!SAVE.camp[3]};
 // campaign map screen
 (function(){ const st=document.createElement('style'); st.textContent=`
@@ -3887,6 +3914,74 @@ function heavyCueTick(){ const el=$('heavyCue'); if(!el) return; const b=LV.boss
   if(!on) return; const p=new THREE.Vector3(b.x,b.hitY,b.z).project(camera); el.style.left=((p.x*.5+.5)*innerWidth)+'px'; el.style.top=Math.max(90,(-p.y*.5+.5)*innerHeight)+'px';
   const k=Math.min(1,b.t/HEAVY_T); el.querySelector('.out').style.transform=`scale(${3.2-2.2*k})`; }
 
+// ================= v1.8: 暗皇·虚无 ZERO (final secret boss) =================
+const VOID_FX=[]; // black smoke puffs (normal blending so they read as true black)
+function voidPuff(p,s=1,life=.9,col=0x07020c){ const m=new THREE.Mesh(new THREE.SphereGeometry(.8,10,8),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.85,depthWrite:false})); m.position.copy(p); m.scale.setScalar(s*.4); scene.add(m);
+  const v=new THREE.Vector3((Math.random()-.5)*1.2,1.2+Math.random()*1.5,(Math.random()-.5)*1.2);
+  PFX.push({t:0,tick(dt){ this.t+=dt; const k=this.t/life; m.position.addScaledVector(v,dt); m.scale.setScalar(s*(.4+k*1.4)); m.material.opacity=Math.max(0,.85*(1-k)); if(k>=1){ scene.remove(m); m.geometry.dispose(); m.material.dispose(); return false; } return true; }}); }
+function voidRing(c,r=10,life=.7){ groundRing(c,0x8a2aff,1,r,life); const m=new THREE.Mesh(new THREE.RingGeometry(.8,1,64),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.8,side:THREE.DoubleSide,depthWrite:false})); m.rotation.x=-Math.PI/2; m.position.set(c.x,.07,c.z); scene.add(m);
+  PFX.push({t:0,tick(dt){ this.t+=dt; const k=this.t/life; m.scale.setScalar(1+k*r); m.material.opacity=.8*(1-k); if(k>=1){ scene.remove(m); return false; } return true; }}); }
+function makeVoidBoss(){ const bot=makeBot(2.5,true); const M2=bot.mats;
+  M2.body.color.setHex(0x1c0a2a); M2.acc.color.setHex(0x5a1a9a); M2.dark.color.setHex(0x050308); M2.eye.color.setHex(0xd040ff); M2.eye.emissive.setHex(0xb020ff); M2.eye.emissiveIntensity=3.2;
+  const crystal=new THREE.MeshStandardMaterial({color:0x2a0a4a,emissive:0x6a1aff,emissiveIntensity:.9,metalness:.6,roughness:.2,flatShading:true});
+  const crown=G(bot.head,0,.4,0); for(let i=0;i<7;i++){ const a=(i-3)*.32; const s=add(new THREE.Mesh(new THREE.ConeGeometry(.07,.5+(i===3?.4:0)-Math.abs(i-3)*.06,6),crystal),crown,Math.sin(a)*.26,.18,Math.cos(a)*.05-.04); s.rotation.z=-a*.6; }
+  bot.wings=[-1,1].map(s=>{ const w=G(bot.torso,s*.4,.5,-.42); for(let i=0;i<5;i++){ const sh=add(new THREE.Mesh(new THREE.ConeGeometry(.12,1.6+i*.35,4),crystal),w,s*(.35+i*.3),.3+i*.18,-.1); sh.rotation.z=s*(-1.0-i*.18); } return w; });
+  [-1,1].forEach(s=>{ const b=add(new THREE.Mesh(new THREE.ConeGeometry(.18,1.3,5),crystal),bot.torso,s*.95,.6,0); b.rotation.z=s*-1.1; });
+  const core=add(new THREE.Mesh(new THREE.IcosahedronGeometry(.16,0),new THREE.MeshBasicMaterial({color:0xff2aff,toneMapped:false})),bot.torso,0,.2,.5); bot.core=core;
+  return bot; }
+function voidTick(e,dt,d){ // extra behaviour for 暗皇·虚无 — returns true while a special attack owns the boss
+  e.auraT=(e.auraT||0)-dt; if(e.auraT<=0){ e.auraT=e.phase2?.05:.11; voidPuff(new THREE.Vector3(e.x+(Math.random()-.5)*3,1+Math.random()*4,e.z+(Math.random()-.5)*3),e.phase2?1.4:1); }
+  if(e.wings) e.wings.forEach((w,i)=>{ w.rotation.y=(i?-1:1)*(.2+Math.sin(clock.elapsedTime*2)*.12); }); if(e.core) e.core.rotation.y+=dt*3;
+  if(!e.phase2&&e.hp<e.max*.5){ e.phase2=true; e.speed*=1.35; e.cd*=.7; e.windT*=.85; banner('暗皇觉醒',' 虚无之力全开放！攻击更快、更狠',2.4); voidRing(new THREE.Vector3(e.x,0,e.z),18,1); for(let i=0;i<20;i++) voidPuff(new THREE.Vector3(e.x,2+Math.random()*4,e.z),2.2,1.4); camKick=Math.max(camKick,2.5); if(AC){ SFX.boom(2.6); HSFX.howl(.8); } }
+  e.metCd=(e.metCd==null?5:e.metCd)-dt;
+  if(e.state==='meteor'){ e.t+=dt; e.g.position.y=Math.min(2.5,e.t*4);
+    if(e.t<1.1&&Math.random()<.6) voidPuff(new THREE.Vector3(e.x,6+Math.random()*2,e.z),1.6,.6);
+    if(Math.abs(e.t-.35)<dt*.6&&!e.met){ e.met=[]; const n=e.phase2?9:6; for(let i=0;i<n;i++){ const a=Math.random()*Math.PI*2, r=i===0?0:2+Math.random()*7; const p=new THREE.Vector3(rig.position.x+Math.sin(a)*r,0,rig.position.z+Math.cos(a)*r);
+        const w=new THREE.Mesh(new THREE.RingGeometry(2.2,2.6,40),addm(0xb040ff,{opacity:.9})); w.rotation.x=-Math.PI/2; w.position.set(p.x,.06,p.z); scene.add(w); const disc=new THREE.Mesh(new THREE.CircleGeometry(2.2,40),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.45,depthWrite:false})); disc.rotation.x=-Math.PI/2; disc.position.set(p.x,.05,p.z); scene.add(disc);
+        e.met.push({p,w,disc,t:-(i*.08)}); } if(AC) SFX.riser(1,40,500,.35); }
+    if(e.met) e.met.forEach(m=>{ m.t+=dt; m.disc.material.opacity=.45+.35*Math.sin(m.t*20); if(m.t>=1.0&&!m.done){ m.done=true; scene.remove(m.w); scene.remove(m.disc);
+        bolt(m.p.clone().setY(40),m.p,.22,0x8a2aff,.3,3); for(let i=0;i<5;i++) voidPuff(m.p.clone().setY(.8),1.8,1); voidRing(m.p,5,.5); emitDebris(m.p.clone().setY(.4),8,.25); if(AC) SFX.boom(1.1); camKick=Math.max(camKick,1);
+        if(Math.hypot(rig.position.x-m.p.x,rig.position.z-m.p.z)<2.8&&rig.position.y<3) damagePlayer(Math.round(e.dmg*.8),m.p.x,m.p.z); } });
+    if(e.t>2.4){ e.state='chase'; e.t=0; e.g.position.y=0; e.met=null; e.metCd=e.phase2?5:7.5; e.atkCd=1; }
+    return true; }
+  if(e.state==='chase'&&e.metCd<=0&&LV.state==='fight'&&!busy()){ e.state='meteor'; e.t=0; e.met=null; banner('⚠ 虚无陨星','快离开紫色光圈！',1.4); return true; }
+  return false; }
+CHAPTERS.push({id:10,stage:'shadow',req:7,name:'终章·虚无降临',boss:'void',bname:'暗皇·虚无 ZERO',bhp:2.5,waves:[[['h',2],['r',3]],[['h',3],['g',3]],[['h',4]]],
+  story:[['司令','暗星母舰沉没的地方……出现了一个黑洞！'],['暗皇·虚无','暗星统领？不过是我的一颗棋子。'],['暗皇·虚无','我是虚无本身。所有的光、所有的魂，都会被我吞噬。'],['{H}','那就来吧！我的魂，比你的黑暗更亮！']],
+  win:'虚无被击碎了！真正的和平终于到来……钢之魂，永不熄灭！'});
+// ---------- loading / entering poster screen (from the poster set) ----------
+(function(){ const st=document.createElement('style'); st.textContent=`
+#loadScr{position:fixed;inset:0;z-index:200;overflow:hidden;background:radial-gradient(ellipse 70% 45% at 50% 52%,#ff5a1f 0%,#8a1a06 38%,#1a0604 72%,#07070c 100%);color:#fff;font-family:"PingFang SC","Microsoft YaHei",sans-serif;transition:opacity .45s;display:flex;flex-direction:column;align-items:center}
+#loadScr.hide{opacity:0;pointer-events:none}
+#loadScr .lines{position:absolute;left:50%;top:52%;width:240vmax;height:240vmax;margin:-120vmax 0 0 -120vmax;background:repeating-conic-gradient(from 0deg,rgba(255,210,58,.22) 0deg 1.2deg,transparent 1.2deg 7deg);animation:spin 40s linear infinite}
+#loadScr .fade{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(0deg,#07070c 30%,transparent)}
+#loadScr .top{position:relative;margin-top:max(7vh,env(safe-area-inset-top));text-align:center}
+#loadScr .top p{margin:0;font-size:clamp(12px,3.2vw,18px);letter-spacing:.5em;color:#ffd23a;font-weight:900}
+#loadScr h1{margin:.1em 0 0;font-size:clamp(64px,21vw,150px);line-height:1;font-weight:900;font-style:italic;letter-spacing:.04em;text-shadow:0 0 30px #ff5a1f,6px 6px 0 #ff5a1f,11px 11px 0 #07070c}
+#loadScr .en{font-size:clamp(24px,8.5vw,60px);font-weight:900;letter-spacing:.3em;color:#ffd23a;text-shadow:0 4px 0 #07070c;font-family:Impact,"Arial Black",sans-serif}
+#loadScr svg{position:absolute;left:50%;top:30%;height:62%;transform:translateX(-50%)}
+#loadScr .bot{position:absolute;left:6%;right:6%;bottom:max(6vh,env(safe-area-inset-bottom));text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+#loadScr .tag{font-size:clamp(28px,8.5vw,56px);font-weight:900;font-style:italic;text-shadow:0 0 18px #ff5a1f}
+#loadScr .bar{width:min(520px,88vw);height:10px;border:2px solid #ffd23a;border-radius:999px;overflow:hidden;background:rgba(0,0,0,.5)}
+#loadScr .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5a1f,#ffd23a,#fff);transition:width .35s}
+#loadScr .st{font-size:13px;letter-spacing:.2em;color:#ffe8d0}
+#loadScr .tip{font-size:13px;color:#ffd9b0;opacity:.9;max-width:88vw}
+`; document.head.appendChild(st);
+  if(document.getElementById('loadScr')) return; const d=document.createElement('div'); d.id='loadScr';
+  d.innerHTML=`<div class="lines"></div><svg viewBox="0 0 400 640" aria-hidden="true"><defs><linearGradient id="ldB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a1410"/><stop offset="1" stop-color="#0c0606"/></linearGradient><linearGradient id="ldD" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffd23a"/><stop offset=".5" stop-color="#ff7a1a"/><stop offset="1" stop-color="#a02a0a"/></linearGradient></defs>
+<g fill="url(#ldB)" stroke="#ff7a2a" stroke-width="2.2" stroke-linejoin="round"><polygon points="150,330 188,330 194,470 182,566 128,566 138,470"/><polygon points="212,330 250,330 262,470 272,566 218,566 206,470"/><rect x="118" y="556" width="74" height="26" rx="8"/><rect x="208" y="556" width="74" height="26" rx="8"/><rect x="142" y="296" width="116" height="44" rx="10"/><polygon points="118,168 282,168 268,302 132,302"/><rect x="74" y="150" width="78" height="66" rx="20"/><rect x="248" y="150" width="78" height="66" rx="20"/><polygon points="84,210 120,214 112,330 92,332"/><rect x="82" y="326" width="40" height="40" rx="10"/><polygon points="282,186 316,170 352,74 328,62"/><circle cx="200" cy="118" r="40"/></g>
+<path d="M150 92 Q200 30 250 92 Q200 62 150 92 Z" fill="#ffd23a"/><rect x="172" y="112" width="56" height="12" rx="6" fill="#3fe0ff"/><circle cx="200" cy="222" r="22" fill="#ffb030"/><circle cx="200" cy="222" r="11" fill="#fff6d0"/>
+<g transform="rotate(20 340 60)"><polygon points="314,70 366,70 340,-120" fill="url(#ldD)" stroke="#fff3b0" stroke-width="2"/><path d="M318 52 L362 40 M322 22 L358 10 M326 -8 L354 -20 M330 -38 L350 -50" stroke="#7a1a00" stroke-width="7" stroke-linecap="round"/></g></svg>
+<div class="fade"></div><div class="top"><p>原创热血机甲动作</p><h1>钢魂烈斗</h1><div class="en">STEEL SOUL</div></div>
+<div class="bot"><div class="tag">燃烧吧，钢之魂！</div><div class="bar"><i></i></div><div class="st">载入中…</div><div class="tip"></div></div>`;
+  document.body.appendChild(d); })();
+const LOAD_TIPS=['小技巧：Boss 重击时光圈缩到最小再闪避，就能 PERFECT 反击！','小技巧：普攻第 4 下是专属终结技，记得连打。','小技巧：属性克制的场地伤害 ×1.3。','小技巧：极必杀和奥义要先在选英雄画面解锁。','小技巧：暂停菜单可以随时 💾 保存进度。','传说：通关第 7 章之后，黑洞里会出现真正的敌人……'];
+function loadScreen(show,text,pct){ const d=document.getElementById('loadScr'); if(!d) return; d.classList.toggle('hide',!show); if(text!=null) d.querySelector('.st').textContent=text; if(pct!=null) d.querySelector('.bar i').style.width=pct+'%';
+  if(show) d.querySelector('.tip').textContent=LOAD_TIPS[(Math.random()*LOAD_TIPS.length)|0]; }
+function enterTransition(done,ms=1500,label='正在进入战场…'){ loadScreen(true,label,5); let p=5; const iv=setInterval(()=>{ p=Math.min(100,p+18+Math.random()*14); loadScreen(true,p>=100?'准备完毕！':label,p); },ms/7);
+  setTimeout(()=>{ clearInterval(iv); loadScreen(true,'准备完毕！',100); setTimeout(()=>{ loadScreen(false); done&&done(); },250); },ms); }
+
+loadScreen(true,'载入中… 组装机体',70);
 function animate(){
   requestAnimationFrame(animate);
   const rdt=Math.min(clock.getDelta(),.05), t=clock.elapsedTime; let dt=rdt;
@@ -4181,6 +4276,7 @@ function animate(){
 }
 animate();
 try{ snapAll(); }catch(e){ console.warn('snap',e); }
+loadScreen(true,'载入完成！',100); setTimeout(()=>loadScreen(false),600);
 addEventListener('resize',()=>{ if(rec) return; fitCamera(); renderer.setSize(innerWidth,innerHeight); composerBloom&&composerBloom.setSize(innerWidth,innerHeight);});
 fitCamera();
 </script>
