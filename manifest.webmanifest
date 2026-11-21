@@ -1,0 +1,19 @@
+{
+  "id": "./index.html",
+  "name": "钢魂烈斗 STEEL SOUL",
+  "short_name": "钢魂烈斗",
+  "description": "原创热血 3D 机甲动作游戏：8 台机体、必杀技、合体技、属性关卡、Boss 战与模型收藏。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0b0808",
+  "theme_color": "#0b0808",
+  "lang": "zh-CN",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
