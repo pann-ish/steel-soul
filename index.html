@@ -59,7 +59,7 @@
     <button data-s="2">招3<br>L</button>
     <button data-a="jump">跳<br>空格</button>
     <button data-a="atk" class="atk">👊<br>普攻 F</button>
-    <button data-a="run">奔跑<br>Shift</button>
+    <button data-a="dodge">⚡<br>闪避 Q</button>
   </div>
   <button id="bExit" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:5;margin-top:110px">退出关卡</button>
   <div id="lvEnd" style="display:none;position:absolute;left:50%;top:62%;transform:translateX(-50%);z-index:6;gap:10px"><button id="bRetry">🔁 再玩一次</button><button id="bBack">🏠 返回展示模式</button></div>
@@ -118,7 +118,7 @@
   #abtns{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,58px);grid-auto-rows:58px;gap:8px;z-index:5}
   #abtns button{padding:0;border-radius:50%;font-size:11px;line-height:1.15;overflow:hidden;white-space:nowrap}
   #abtns button[data-a=jump]{grid-column:1;grid-row:2}
-  #abtns button[data-a=run]{grid-column:1;grid-row:3}
+  #abtns button[data-a=run],#abtns button[data-a=dodge]{grid-column:1;grid-row:3}
   #abtns .atk{grid-column:2/4;grid-row:2/4;font-size:17px;font-weight:900;background:radial-gradient(circle at 40% 35%,#ff9a4a,#c8341a);border:3px solid #ffd23a;box-shadow:0 0 18px rgba(255,120,40,.6)}
   #abtns .atk:active{transform:scale(.93)}
   #abtns button[data-s]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1}
@@ -189,7 +189,7 @@
 <div id="helpPanel" class="panel"><h3>📖 玩法说明 <button class="x" data-close="helpPanel">✕</button></h3>
   <div style="font-size:14px;line-height:1.8">
   <b>单人模式</b>：自由练习，点底部“⚔️ 招式”选择要放的招，训练机器人会显示伤害。<br>
-  <b>闯关模式</b>：7 章主线 + 2 章番外。每章有剧情、好几波敌军（暗星兵 / 疾袭兵 / 重装兵）和 Boss，按剩余血量拿 1～3 星和币。<br><b>皮肤</b>：选英雄时可用币买 黄金 / 暗夜 / 极光 皮肤，特效颜色会跟着变；集齐收藏全套免费送黄金。<br>
+  <b>闪避反击</b>：Boss 战中，Boss 发动重击时会出现缩小的光圈，光圈缩到最小时按「⚡闪避」(Q)，会判定 PERFECT / GREAT / GOOD，接着点攻击就能雷光反击！<br><b>闯关模式</b>：7 章主线 + 2 章番外。每章有剧情、好几波敌军（暗星兵 / 疾袭兵 / 重装兵）和 Boss，按剩余血量拿 1～3 星和币。<br><b>皮肤</b>：选英雄时可用币买 黄金 / 暗夜 / 极光 皮肤，特效颜色会跟着变；集齐收藏全套免费送黄金。<br>
   <b>手机操作</b>：左下摇杆移动（推到底奔跑），右下按钮放招式和跳跃。<br>
   <b>键盘操作</b>：WASD/方向键移动 · Shift 奔跑 · 空格 跳 · F 普攻 · J/K/L 三个招式。<br>
   <b>EN 能量</b>：放招会消耗蓝色 EN，会慢慢回复；合体技需要 150 EN。<br>
@@ -1512,7 +1512,7 @@ const JOY={x:0,y:0,active:false,id:null};
   const end=()=>{ JOY.active=false; JOY.x=JOY.y=0; kn.style.left='40px'; kn.style.top='40px'; };
   j.addEventListener('pointerup',end); j.addEventListener('pointercancel',end);
   document.querySelectorAll('#abtns button').forEach(b=>{ b.addEventListener('pointerdown',e=>{ e.stopPropagation(); initAudio(); const a=b.dataset.a;
-    if(b.dataset.s!==undefined){ trySlot(+b.dataset.s); return; } if(a==='atk'){ tryBasic(); return; } if(a==='jump') doJump(); else if(a==='run'){ PL.runLock=!PL.runLock; b.classList.toggle('on',PL.runLock); } }); });
+    if(b.dataset.s!==undefined){ trySlot(+b.dataset.s); return; } if(a==='atk'){ tryBasic(); return; } if(a==='dodge'){ tryDodge(); return; } if(a==='jump') doJump(); else if(a==='run'){ PL.runLock=!PL.runLock; b.classList.toggle('on',PL.runLock); } }); });
 })();
 function toast(t){ LV.toast={t:0,text:t}; }
 function banner(a,b,dur=2.2){ LV.banner={a,b,t:0,dur}; }
@@ -1566,9 +1566,9 @@ function spawnEnemy(boss,type='g'){
   const hk=boss&&LV.bossKey&&LV.bossKey!=='dark'?LV.bossKey:null; const T=ETYPE[type]||ETYPE.g; const sc=hk?1.55:(boss?2.1:T.sc), bot=hk?makeHeroBot(hk):makeBot(sc,boss);
   if(hk){ const hm=bot.hero.m; hm.main.color.multiplyScalar(.32); hm.sub.color.setHex(0x1a0a14); hm.glow.color.setHex(0xff2a3a); hm.glow.emissive.setHex(0xff2a3a); }
   else if(!boss&&T.body){ bot.mats.body.color.setHex(T.body); bot.mats.acc.color.setHex(T.acc); }
-  const bhp=Math.round(6000*(C?C.bhp:1)), hp=boss?bhp:Math.round(T.hp*mul);
+  const bhp=Math.round(12000*(C?C.bhp:1)), hp=boss?bhp:Math.round(T.hp*mul);
   const e={...bot,boss,etype:type,x,z,yaw:0,vx:0,vz:0,r:boss?2.1:T.r,mass:boss?4:(type==='h'?2.2:1),hp,max:hp,disp:hp,speed:boss?2.6:T.spd,range:boss?4.6:2.7*(T.r/1.05),
-    dmg:Math.round((boss?320:T.dmg)*(boss?Math.max(.7,C?C.bhp:1):mul)),windT:boss?.85:T.wind,cd:boss?2.2:T.cd,atkCd:1+Math.random(),state:'chase',t:0,flash:0,dead:false,deathT:0,walk:Math.random()*6,hitY:hk?4.0*sc:(boss?2.3:2.2)*sc,spawnT:0,stompCd:4,bsc:sc,
+    dmg:Math.round((boss?460:T.dmg)*(boss?Math.max(.7,C?C.bhp:1):mul)),windT:boss?.8:T.wind,cd:boss?1.9:T.cd,atkCd:1+Math.random(),state:'chase',t:0,flash:0,dead:false,deathT:0,walk:Math.random()*6,hitY:hk?4.0*sc:(boss?2.3:2.2)*sc,spawnT:0,stompCd:4,bsc:sc,
     bname:hk?(C&&C.boss===hk?C.bname:HEROES[hk].name+' '+HEROES[hk].en):(C?C.bname:'暗星统领')};
   e.g.position.set(x,0,z); LV.enemies.push(e); LV.spawned++;
   emit(new THREE.Vector3(x,.2,z),new THREE.Vector3(0,1,0),24,.2,boss?0xd060ff:0xff8040); SFX.whoosh(.5,false,.5);
@@ -1677,7 +1677,10 @@ function levelTick(dt,rdt){
     if(!enemyFrozen && !PL.dead && e.stun<=0 && LV.state==='fight'){
       if(e.state==='chase'){ let dy=want-e.yaw; dy=Math.atan2(Math.sin(dy),Math.cos(dy)); e.yaw+=dy*Math.min(1,dt*5);
         if(d>e.range+PL.r-.6){ e.x+=Math.sin(e.yaw)*e.speed*(STAGES[STAGE].espd||1)*dt; e.z+=Math.cos(e.yaw)*e.speed*(STAGES[STAGE].espd||1)*dt; moving=true; }
-        else if(e.atkCd<=0){ e.state=(e.boss&&e.stompCd<=0)?'stompWind':'wind'; e.t=0; } }
+        else if(e.atkCd<=0){ e.state=(e.boss&&e.stompCd<=0)?'stompWind':(e.boss&&!LV.training&&Math.random()<.45)?'heavy':'wind'; e.t=0; if(e.state==='heavy'&&AC){ SFX.riser(1.2,60,700,.35); } } }
+      else if(e.state==='heavy'){ e.t+=dt; let dy2=want-e.yaw; dy2=Math.atan2(Math.sin(dy2),Math.cos(dy2)); e.yaw+=dy2*Math.min(1,dt*3); armUp=Math.min(1.25,e.t/HEAVY_T*1.25); e.flash=Math.max(e.flash,.45+.45*Math.sin(e.t*28));
+        if(e.t>=HEAVY_T){ e.state='strike'; e.t=0; e.vx+=Math.sin(e.yaw)*14; e.vz+=Math.cos(e.yaw)*14; if(AC) SFX.boom(1.6); groundRing(new THREE.Vector3(e.x+Math.sin(e.yaw)*3,0,e.z+Math.cos(e.yaw)*3),0xff3a2a,1,9,.5); camKick=Math.max(camKick,1.6);
+          let ang=want-e.yaw; ang=Math.atan2(Math.sin(ang),Math.cos(ang)); if(d<e.range+PL.r+1.8 && Math.abs(ang)<1.3 && rig.position.y<3) damagePlayer(Math.round(e.dmg*2.2),e.x,e.z); } }
       else if(e.state==='wind'){ e.t+=dt; armUp=Math.min(1,e.t/e.windT); if(e.t>=e.windT){ e.state='strike'; e.t=0; e.vx+=Math.sin(e.yaw)*7; e.vz+=Math.cos(e.yaw)*7; SFX.whoosh(.25,true,.5);
           let ang=want-e.yaw; ang=Math.atan2(Math.sin(ang),Math.cos(ang)); if(d<e.range+PL.r+.4 && Math.abs(ang)<1.1 && rig.position.y<3) damagePlayer(e.dmg,e.x,e.z); } }
       else if(e.state==='strike'){ e.t+=dt; armUp=1-e.t/.4; if(e.t>.4){ e.state='chase'; e.atkCd=e.cd*(.8+Math.random()*.5); } }
@@ -2716,7 +2719,7 @@ function gameUI(on){
 }
 function toMenu(){
   closePanels(); APP.paused=false; if(HM.on) endHeroMove(); if(MODE==='level') exitLevel();
-  APP.state='menu'; showScreen('menu'); gameUI(false); playTrack('title'); endEntrance(); hidePlate(); entBGoff(); restoreScene(); $('lvui').style.display='none'; dummyRoot.visible=false; shot=null;
+  APP.state='menu'; showScreen('menu'); gameUI(false); playTrack('title'); endEntrance(); hidePlate(); entBGoff(); restoreScene(); if(typeof endCounterWin==='function') endCounterWin(); $('lvui').style.display='none'; dummyRoot.visible=false; shot=null;
   $('menuWho').textContent='当前机体：'+HEROES[CUR].name+' '+HEROES[CUR].en; autoSpin=true; refreshContinue();
 }
 function markHero(){ if(!SAVE.heroes.includes(CUR)){ SAVE.heroes.push(CUR); statDirty=true; } }
@@ -3133,6 +3136,7 @@ const BASIC_SET={
 };
 function basicAvailable(){ return !busy()&&BASIC.t<0&&!(MODE==='level'&&(PL.dead||LV.state!=='fight'))&&APP.state==='game'; }
 function tryBasic(){
+  if(typeof DODGE!=='undefined'&&DODGE.win>=0){ doCounter(); return; }
   if(busy()||ENTRY.t>=0) return; if(BASIC.t>=0&&BASIC.t<BASIC.dur*.7) return; if(MODE==='level'&&(PL.dead||LV.state!=='fight')) return;
   const now2=clock.elapsedTime; BASIC.step=(now2-BASIC.last<.9)?(BASIC.step+1)%4:0; BASIC.last=now2; BASIC.t=0; BASIC.hit=false;
   { const r=basicRoot(); r.position.set(0,0,0); r.rotation.set(0,0,0); r.visible=true; }
@@ -3806,6 +3810,82 @@ Object.keys(FOURTH).forEach(k=>{ const f=FOURTH[k], fx0=f.fx; f.fx=(p,c)=>{ fx0(
 // stronger hit sparks on every normal hit
 const _basicFxBoost=(k,step,p)=>{ const col=parseInt(entColors(k)[0].slice(1),16); emit(p,rigDir(0,.3,-1),10+step*6,.25+step*.05,col); if(step>=1) ringFX(p,col,.5+step*.3,p.y,.25,.06); };
 
+// ================= v1.7: reliable hits · stronger bosses · JUST DODGE + lightning counter =================
+// ---------- hits always land on what the move is aimed at ----------
+function liveTarget(){ if(LV.target&&!LV.target.dead) return LV.target; const p=tgtWorld(); let best=null,bd=1e9;
+  LV.enemies.forEach(e=>{ if(e.dead) return; const d=Math.min(Math.hypot(e.x-p.x,e.z-p.z),Math.hypot(e.x-rig.position.x,e.z-rig.position.z)); if(d<bd){ bd=d; best=e; } });
+  if(best&&bd<16){ LV.target=best; return best; } return null; }
+strike=function(dmg,force,big){ hitCamGuard(); if(MODE==='show') return hitDummy(dmg,force,big); const e=liveTarget(); if(e) hitEnemy(e,dmg,force,big); };
+strikeArea=function(rad,dmg,force,big){ hitCamGuard(); if(MODE==='show') return hitDummy(dmg,force,big); const p=tgtWorld(); const hit=new Set();
+  LV.enemies.forEach(e=>{ if(e.dead) return; if(Math.hypot(e.x-rig.position.x,e.z-rig.position.z)<rad+e.r||Math.hypot(e.x-p.x,e.z-p.z)<rad*.75+e.r){ hit.add(e); } });
+  const t=liveTarget(); if(t) hit.add(t); hit.forEach(e=>hitEnemy(e,dmg,force,big)); };
+const _strikeLine0=strikeLine; strikeLine=function(dmg,force,len,width){ if(MODE==='show') return hitDummy(dmg,force,true); const hs=new Set(), h0=hitEnemy; hitEnemy=function(e,...a){ hs.add(e); return h0(e,...a); }; try{ _strikeLine0(dmg,force,len,width); } finally { hitEnemy=h0; } const t=liveTarget(); if(t&&!hs.has(t)) hitEnemy(t,dmg,force,true); };
+// ---------- JUST DODGE + counter ----------
+const DODGE={cd:0,win:-1,e:null,rate:null,t:0,count:0};
+const HEAVY_T=1.35;
+const RATE={MISS:{c:'#ff5a4a',dmg:0,sub:''},PERFECT:{c:'#ffd23a',dmg:950,sub:'完美闪避！'},GREAT:{c:'#4fe0ff',dmg:650,sub:'漂亮！'},GOOD:{c:'#7aff8a',dmg:420,sub:'闪避成功'}};
+(function(){ const st=document.createElement('style'); st.textContent=`
+#rateFx{position:absolute;left:0;right:0;top:24%;z-index:23;pointer-events:none;text-align:center;display:none;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+#rateFx .r{font-size:clamp(54px,17vw,110px);font-weight:900;font-style:italic;letter-spacing:.04em;background:linear-gradient(180deg,#fff 15%,var(--c) 60%,#fff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 #000) drop-shadow(0 0 18px var(--c));animation:rateA 1.2s cubic-bezier(.2,1.6,.4,1) forwards}
+#rateFx .s{font-size:18px;font-weight:900;color:#fff;text-shadow:0 2px 4px #000;margin-top:-4px;animation:rateS 1.2s ease-out forwards}
+#rateFx .p{display:inline-block;margin-top:8px;padding:6px 16px;border-radius:999px;font-weight:900;color:#111;background:var(--c);font-size:16px;animation:blinkA .3s steps(2) infinite}
+@keyframes rateA{0%{transform:scale(2.6) skewX(-12deg);opacity:0}14%{transform:scale(1) skewX(-12deg);opacity:1}75%{opacity:1}100%{transform:scale(1.1) skewX(-12deg);opacity:0}}
+@keyframes rateS{0%,10%{opacity:0;transform:translateY(10px)}20%,75%{opacity:1;transform:none}100%{opacity:0}}
+#slowTint{position:absolute;inset:0;z-index:4;pointer-events:none;display:none;background:radial-gradient(circle,transparent 40%,rgba(40,120,255,.35));mix-blend-mode:screen}
+#abtns button[data-a=dodge]{border-radius:50%!important;background:radial-gradient(circle at 40% 35%,#e8fbff,#4fb0ff 45%,#0a2a6a)!important;color:#fff;font-weight:900;border:none!important;clip-path:none}
+#abtns button[data-a=dodge].counter{animation:readyP .25s ease-in-out infinite;background:radial-gradient(circle at 40% 35%,#fff,#ffd23a 45%,#a04a00)!important}
+`; document.head.appendChild(st);
+  const r=document.createElement('div'); r.id='rateFx'; document.body.appendChild(r); const s=document.createElement('div'); s.id='slowTint'; document.body.appendChild(s); })();
+function showRate(rate,sub,prompt){ const el=$('rateFx'); if(!el) return; const R=RATE[rate]||{c:'#fff'}; el.style.setProperty('--c',R.c);
+  el.innerHTML=`<div class="r">${rate}!!</div><div class="s">${sub||R.sub}</div>${prompt?`<div class="p">${prompt}</div>`:''}`; el.style.display='block'; clearTimeout(showRate.t); showRate.t=setTimeout(()=>{ el.style.display='none'; },prompt?1300:1200); }
+function tryDodge(){ if(MODE!=='level'||APP.state!=='game'||PL.dead||LV.state!=='fight') return; if(DODGE.win>=0){ doCounter(); return; } if(busy()||DODGE.cd>0) return;
+  DODGE.cd=.55; BASIC.t=-1; const r=basicRoot(); r.position.set(0,0,0); r.rotation.set(0,0,0);
+  // judge: which enemy is about to hit us, and how close to impact?
+  let best=null, tti=9; const b=LV.boss; if(b&&!b.dead&&b.state==='heavy'){ best=b; tti=HEAVY_T-b.t; }
+  const rate=!best?null:tti<=.16?'PERFECT':tti<=.34?'GREAT':tti<=.55?'GOOD':null;
+  if(best&&!rate) showRate('MISS','太早了！等光圈缩到最小再闪');
+  // dash away sideways from the attacker (or backwards if no threat)
+  const src=best||LV.target; let dx=0,dz=-1; if(src){ const ax=rig.position.x-src.x, az=rig.position.z-src.z, l=Math.hypot(ax,az)||1; const s=Math.random()<.5?1:-1; dx=(ax/l)*.5+(-az/l)*s*.85; dz=(az/l)*.5+(ax/l)*s*.85; }
+  PL.kvx=dx*26; PL.kvz=dz*26; PL.inv=Math.max(PL.inv,rate?1.3:.45);
+  const col=parseInt(entColors(CUR)[0].slice(1),16); for(let i=0;i<6;i++) setTimeout(()=>{ if(APP.state==='game') emitGas(rigW(0,2.5,0),Yv,i%2?col:0x9ff4ff); },i*30);
+  if(AC){ SFX.whoosh(.35,true,.9); }
+  if(rate){ DODGE.win=0; DODGE.e=best; DODGE.rate=rate; best.stun=Math.max(best.stun||0,1.6); best.state='chase'; best.atkCd=2; slowMo(.9); $('slowTint').style.display='block';
+    showRate(rate,RATE[rate].sub,'⚡ 点击 攻击/闪避 反击！'); if(AC){ SFX.chime(); HSFX.zap(.5); } const btn=document.querySelector('#abtns button[data-a=dodge]'); if(btn) btn.classList.add('counter'); }
+}
+function doCounter(){ const e=DODGE.e, rate=DODGE.rate; endCounterWin(); if(!e||e.dead) return; const tl=DODGE.tw||0; let rr=rate; if(tl>.55&&rr==='PERFECT') rr='GREAT'; if(tl>.8) rr='GOOD';
+  DODGE.count++; statAdd('specials');
+  // blink behind the attacker
+  const fx=Math.sin(e.yaw), fz=Math.cos(e.yaw); rig.position.x=e.x-fx*(e.r+1.8); rig.position.z=e.z-fz*(e.r+1.8); rig.rotation.y=Math.atan2(e.x-rig.position.x,e.z-rig.position.z); LV.target=e; TGT=Math.max(3.4,e.r+1.4); TGTY=Math.min(e.hitY,4.5);
+  PL.kvx=PL.kvz=0; PL.inv=Math.max(PL.inv,.8);
+  // finisher pose = this robot's 4th normal hit, without its own damage
+  const S=BASIC_SET[CUR][3]; BASIC.step=3; BASIC.S=S; BASIC.dur=S.d; BASIC.t=S.h*.55; BASIC.hit=true; BASIC.lunge=0; BASIC.last=clock.elapsedTime;
+  const p=new THREE.Vector3(e.x,e.hitY,e.z), col=parseInt(entColors(CUR)[0].slice(1),16);
+  for(let i=0;i<6;i++) bolt(p.clone().add(new THREE.Vector3((Math.random()-.5)*6,30,(Math.random()-.5)*6)),p,.12,i%2?0xffffff:0x9ff4ff,.35,3);
+  bolt(curChestW(new THREE.Vector3()),p,.1,col,.3,2); ringFX(p,0x9ff4ff,1.2,p.y,.5,.14); ringFX(p,col,2,p.y,.6,.08); groundRing(new THREE.Vector3(e.x,0,e.z),0x9ff4ff,1,12,.6);
+  dirs(12).forEach(d=>emit(p,d.clone().setY(.4),3,.4,0x9ff4ff)); emit(p,Yv,40,.4,0xc8f4ff); emitDebris(p,16,.3);
+  hitEnemy(e,RATE[rr].dmg,16,true); e.stun=Math.max(e.stun||0,1.2);
+  LV.enemies.forEach(o=>{ if(o!==e&&!o.dead&&Math.hypot(o.x-e.x,o.z-e.z)<8){ bolt(p,new THREE.Vector3(o.x,o.hitY,o.z),.06,0x9ff4ff,.25,1); hitEnemy(o,Math.round(RATE[rr].dmg*.3),6,false); } });
+  impactFrame(RATE[rr].c,'反击！！'); showRate(rr,'⚡ 雷光反击 · '+RATE[rr].dmg+' 伤害'); hitStop=Math.max(hitStop,.16); camKick=Math.max(camKick,2.6); slowMo(.5);
+  setShot(1.2,1.35,12,'hitmid',{dth:.15}); setTimeout(()=>{ if(!busy()) shot=null; },900);
+  if(AC){ HSFX.thunder(.9); SFX.boom(2); }
+}
+function endCounterWin(){ DODGE.win=-1; $('slowTint').style.display='none'; const btn=document.querySelector('#abtns button[data-a=dodge]'); if(btn) btn.classList.remove('counter'); }
+function dodgeTick(rdt){ DODGE.cd=Math.max(0,DODGE.cd-rdt); if(DODGE.win>=0){ DODGE.win+=rdt; DODGE.tw=DODGE.win; if(DODGE.win>1.15||!DODGE.e||DODGE.e.dead||MODE!=='level'){ endCounterWin(); } } }
+addEventListener('keydown',e=>{ if(e.key.toLowerCase()==='q'&&APP.state==='game') tryDodge(); });
+
+// ---------- boss heavy attack telegraph: shrinking timing ring ----------
+(function(){ const st=document.createElement('style'); st.textContent=`
+#heavyCue{position:absolute;z-index:22;pointer-events:none;display:none;transform:translate(-50%,-50%);width:120px;height:120px}
+#heavyCue .in{position:absolute;inset:0;border-radius:50%;border:5px solid #ffd23a;box-shadow:0 0 16px #ffd23a,inset 0 0 12px #ffd23a}
+#heavyCue .out{position:absolute;inset:0;border-radius:50%;border:4px solid #ff3a2a;box-shadow:0 0 14px #ff3a2a}
+#heavyCue .tx{position:absolute;left:50%;top:-34px;transform:translateX(-50%);white-space:nowrap;font-weight:900;font-size:16px;color:#fff;background:#d01a10;padding:3px 10px;border-radius:999px;animation:blinkA .25s steps(2) infinite}
+#heavyCue .ex{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:46px;font-weight:900;color:#ffd23a;text-shadow:0 0 10px #ff3a2a,0 3px 0 #000}
+`; document.head.appendChild(st); const d=document.createElement('div'); d.id='heavyCue'; d.innerHTML='<div class="out"></div><div class="in"></div><div class="ex">!</div><div class="tx">⚠️ 重击来袭！看准时机闪避</div>'; document.body.appendChild(d); })();
+function heavyCueTick(){ const el=$('heavyCue'); if(!el) return; const b=LV.boss; const on=MODE==='level'&&APP.state==='game'&&b&&!b.dead&&b.state==='heavy';
+  el.style.display=on?'block':'none'; const btn=document.querySelector('#abtns button[data-a=dodge]'); if(btn){ btn.style.visibility=(MODE==='level'&&!LV.training&&LV.stage===2&&b&&!b.dead)||DODGE.win>=0?'visible':'hidden'; btn.classList.toggle('counter',on||DODGE.win>=0); }
+  if(!on) return; const p=new THREE.Vector3(b.x,b.hitY,b.z).project(camera); el.style.left=((p.x*.5+.5)*innerWidth)+'px'; el.style.top=Math.max(90,(-p.y*.5+.5)*innerHeight)+'px';
+  const k=Math.min(1,b.t/HEAVY_T); el.querySelector('.out').style.transform=`scale(${3.2-2.2*k})`; }
+
 function animate(){
   requestAnimationFrame(animate);
   const rdt=Math.min(clock.getDelta(),.05), t=clock.elapsedTime; let dt=rdt;
@@ -4031,7 +4111,7 @@ function animate(){
   handL.wrist.getWorldPosition(tmpV); tmpV.y-=.35; chargeL.update(tmpV.clone(),chL,t,chCol);
   foreR.localToWorld(tmpV.set(0,-1.35,0)); chargeR.update(tmpV.clone(),chR,t,chCol);
   dummyTick(dt);
-  heroFrame(dt,t); entryTick(rdt); entTick(rdt); buttonsTick(rdt);
+  heroFrame(dt,t); entryTick(rdt); entTick(rdt); buttonsTick(rdt); dodgeTick(rdt); heavyCueTick();
   debris.children.forEach(m=>{if(!m.visible)return; const d=m.userData; d.life-=dt; d.v.y-=dt*.5; m.position.add(d.v.clone().multiplyScalar(dt*60));
     m.rotation.x+=d.w.x; m.rotation.y+=d.w.y; m.rotation.z+=d.w.z;
     if(m.position.y<.05){m.position.y=.05; d.v.y=Math.abs(d.v.y)*.35; d.v.x*=.6; d.v.z*=.6; d.w.multiplyScalar(.6);} if(d.life<=0) m.visible=false;});
