@@ -2708,7 +2708,7 @@ function shellTick(rdt){
   else if(achQ.length){ const a=achQ.shift(); $('achToast').textContent='🏆 成就达成：'+a.name+(a.rw!=='—'?'　'+a.rw:''); $('achToast').style.display='block'; achT=2.8; if(AC) SFX.chime(); }
 }
 // ---------- screens ----------
-function showScreen(id){ ['cover','menu','heroSel','stageSel'].forEach(s=>$(s)&&$(s).classList.toggle('show',s===id)); }
+function showScreen(id){ ['cover','menu','heroSel','stageSel'].forEach(s=>$(s)&&$(s).classList.toggle('show',s===id)); if(id!=='heroSel'&&globalThis.__leaveSel) globalThis.__leaveSel(id); }
 function closePanels(){ document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show')); $('charPanel').style.display='none'; $('sfxPanel').style.display='none'; $('skillDrawer').classList.remove('show'); }
 function gameUI(on){
   $('ctrl').style.display='none';
@@ -2991,7 +2991,7 @@ function camCollide(){ if(APP.state!=='game') return; let moved=false; if(camera
 })();
 const FLOW={mode:'single',hero:'blaze',stage:'space'};
 let ss=['screenSet'];
-function setScreen(id){ ['cover','menu','heroSel','stageSel'].forEach(s=>$(s).classList.toggle('show',s===id)); }
+function setScreen(id){ ['cover','menu','heroSel','stageSel'].forEach(s=>$(s).classList.toggle('show',s===id)); if(id!=='heroSel'&&globalThis.__leaveSel) globalThis.__leaveSel(id); }
 function openHeroSel(mode){ playTrack('select'); musPreload([FLOW.stage||'space']); FLOW.mode=mode; closePanels(); APP.state='select'; setScreen('heroSel'); restoreScene(); applyStage(FLOW.stage||'space');
   const cards=$('hsCards'); cards.innerHTML='';
   ALLH.forEach(k=>{ const H=HEROES[k]; const d=document.createElement('div'); d.className='hc'+(k===CUR?' on':''); d.dataset.k=k; const lk=!heroUnlocked(k);
@@ -3001,7 +3001,7 @@ function openHeroSel(mode){ playTrack('select'); musPreload([FLOW.stage||'space'
     d.onclick=()=>{ cards.querySelectorAll('.hc').forEach(x=>x.classList.toggle('on',x===d)); setHero(k); hsInfo(); }; cards.appendChild(d); });
   hsInfo(); }
 function hsInfoSk(){ renderSkins(); }
-function hsInfo(){ renderSkins(); renderUltRow(); const H=HEROES[CUR]; $('hsMoves').textContent=H.name+' · '+H.title+' · 👊普攻 / '+slotsOf(CUR).map(i=>H.moves[i].name).join(' / ')+(fullSet(CUR)?'  ✨收藏全套：伤害+15%':''); }
+function hsInfo(){ renderSkins(); renderUltRow(); const H=HEROES[CUR]; $('hsMoves').textContent=H.name+' · '+H.title+(fullSet(CUR)?'  ✨收藏全套：伤害+15%':''); }
 $('hsBack').onclick=()=>{ APP.state='menu'; setScreen('menu'); };
 $('hsGo').onclick=()=>{ FLOW.hero=CUR; SAVE.hero=CUR; saveGame(); if(FLOW.mode==='campaign'){ endEntrance(); hidePlate(); entBGoff(); beginChapter(); } else openStageSel(); };
 function openStageSel(){ playTrack('select'); endEntrance(); hidePlate(); entBGoff(); APP.state='stage'; setScreen('stageSel'); const cards=$('ssCards'); cards.innerHTML='';
@@ -3595,6 +3595,7 @@ function nextChapter(){ return CHAPTERS.find(c=>!c.need&&chapOpen(c)&&!SAVE.camp
 (function(){ const menu=$('menu'); if(!menu) return; const b=document.createElement('button'); b.className='mbtn'; b.id='mContinue';
   const first=menu.querySelector('.mbtn'); menu.insertBefore(b,first);
   b.onclick=()=>{ initAudio(); const c=nextChapter(); FLOW.chap=c.id; FLOW.stage=c.stage; FLOW.mode='campaign'; if(SAVE.hero&&HEROES[SAVE.hero]&&heroUnlocked(SAVE.hero)) CUR=SAVE.hero; openHeroSel('campaign'); }; })();
+globalThis.__leaveSel=function(id){ if(ENT.on&&ENT.mode==='select') endEntrance(); if(ENT.mode!=='battle'||!ENT.on){ hidePlate(); entBGoff(); } SEL=null; };
 function refreshContinue(){ const b=$('mContinue'); if(!b) return; const c=nextChapter(); const t=SAVE.lastSave?new Date(SAVE.lastSave):null;
   b.innerHTML=`<i>▶️</i><span>继续游戏<small>${Object.keys(SAVE.camp||{}).length?'下一关：第 '+c.id+' 章 · '+c.name:'从第 1 章开始冒险'}${t?' · 上次保存 '+(t.getMonth()+1)+'/'+t.getDate()+' '+t.getHours()+':'+String(t.getMinutes()).padStart(2,'0'):''}</small></span>`; }
 // ---------- training ground (single mode) runs on the level engine: free movement + joystick ----------
@@ -3765,10 +3766,10 @@ function ultTick(dt){ if(!ULT.on) return; if(ULT.k!==CUR){ endUlt(); return; } i
 function ultPose(P){ if(!ULT.on||!ULT.dt) return; ULT.mv.run(ULT.T,ULT.dt,P,entRoot(ULT.k),ULT.D); }
 function endUlt(){ if(!ULT.on) return; const R=entRoot(ULT.k); try{ if(ULT.mv.end) ULT.mv.end(ULT.D); }catch(e){} R.position.set(0,0,0); R.rotation.set(0,0,0); R.scale.setScalar(1); R.visible=(ULT.k===CUR); ULT.on=false; ULT.mv=null; shot=null; TGTOFF.y=0; }
 function renderUltRow(){ const row=$('hsUlt'); if(!row) return; const k=CUR;
-  row.innerHTML=ULTS[k].map((mv,i)=>{ const own=ultOwned(k,i); return `<button data-u="${i}" class="${own?'own':''}">${i?'🌟':'🔥'} ${mv.name.replace(/^(极必杀|奥义)·/,'')}<small>${own?(i?'奥义':'极必杀')+' · EN '+mv.cost:'🔒 '+ULT_PRICE[i]+' 币解锁'}</small></button>`; }).join('');
-  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ initAudio(); const i=+b.dataset.u, mv=ULTS[k][i]; if(ultOwned(k,i)){ $('hsMoves').textContent=`${i?'🌟 奥义':'🔥 极必杀'}「${mv.name}」：消耗 EN ${mv.cost}，战斗中按 ${i?'I':'U'} 或右侧大按钮发动。`; return; }
-    if((SAVE.coins|0)<ULT_PRICE[i]){ $('hsMoves').textContent=`🪙 币不够！解锁「${mv.name}」需要 ${ULT_PRICE[i]} 币。闯关、打训练机器人都能赚币。`; if(AC) SFX.clank(); return; }
-    SAVE.coins-=ULT_PRICE[i]; SAVE.ult[k]=SAVE.ult[k]||[0,0]; SAVE.ult[k][i]=1; saveGame(); $('hsMoves').textContent=`✨ 解锁成功！「${mv.name}」已加入 ${HEROES[k].name} 的招式。`; if(AC){ SFX.chime(); SFX.boom(1); } impactFrame(entColors(k)[0],i?'奥义！！':'极必杀！！'); renderUltRow(); renderSkins(); }); }
+  row.innerHTML=ULTS[k].map((mv,i)=>{ const own=ultOwned(k,i); return `<button data-u="${i}" class="${own?'own':''}">${i?'🌟 奥义必杀':'🔥 极必杀'}<small>${own?'已解锁':'🔒 '+ULT_PRICE[i]+' 币解锁'}</small></button>`; }).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ initAudio(); const i=+b.dataset.u, mv=ULTS[k][i]; if(ultOwned(k,i)){ $('hsMoves').textContent=`${i?'🌟 奥义必杀':'🔥 极必杀'}已解锁，战斗中按右侧大按钮发动（消耗 EN ${mv.cost}）。`; return; }
+    if((SAVE.coins|0)<ULT_PRICE[i]){ $('hsMoves').textContent=`🪙 币不够！解锁${i?'奥义必杀':'极必杀'}需要 ${ULT_PRICE[i]} 币。闯关、打训练机器人都能赚币。`; if(AC) SFX.clank(); return; }
+    SAVE.coins-=ULT_PRICE[i]; SAVE.ult[k]=SAVE.ult[k]||[0,0]; SAVE.ult[k][i]=1; saveGame(); $('hsMoves').textContent=`✨ 解锁成功！${HEROES[k].name} 学会了${i?'奥义必杀':'极必杀'}！`; if(AC){ SFX.chime(); SFX.boom(1); } impactFrame(entColors(k)[0],i?'奥义！！':'极必杀！！'); renderUltRow(); renderSkins(); }); }
 (function(){ const st=document.createElement('style'); st.textContent=`
 #hsUlt{display:flex;gap:6px;justify-content:center;margin:0 0 6px;flex:0 0 auto;padding:0 8px}
 #hsUlt button{font-size:12px;font-weight:900;padding:6px 10px;border-radius:10px;background:linear-gradient(160deg,#3a1a0a,#120806);border:2px dashed rgba(255,160,60,.5);color:#ffd9a0;display:flex;flex-direction:column;align-items:center;line-height:1.2;max-width:48vw}
