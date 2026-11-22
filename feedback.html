@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>钢魂烈斗 STEEL SOUL · 玩家评价</title>
+<meta name="description" content="玩过钢魂烈斗吗？30 秒告诉我们你的想法，下一次更新就改！">
+<meta property="og:title" content="钢魂烈斗 STEEL SOUL · 玩家评价">
+<meta property="og:description" content="你的每一句话都会变成下一次更新 🔧">
+<meta property="og:image" content="https://pann-ish.github.io/steel-soul/docs/banner.jpg">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--fire:#ff5a1f;--gold:#ffd23a;--card:#15131c;--line:#2a2633}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse 90% 60% at 50% 0%,#4a1206 0%,#14070a 50%,#0b0a10 100%);color:#f1ece6;font:15px/1.6 -apple-system,"PingFang SC","Noto Sans SC",sans-serif}
+.wrap{max-width:520px;margin:0 auto;padding:26px 16px 50px}
+.top{text-align:center}
+.kick{display:inline-block;font-size:11px;letter-spacing:.25em;color:var(--gold);border:1px solid rgba(255,210,58,.45);border-radius:99px;padding:3px 12px}
+h1{margin:10px 0 0;font-size:38px;font-weight:900;line-height:1.1;background:linear-gradient(180deg,#fff,#ffd23a 55%,#ff5a1f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.en{letter-spacing:.4em;color:var(--gold);font-weight:800;font-size:12px}
+.hi{margin:14px 0 0;color:#ffd9a0;font-size:14px}
+.card{margin-top:18px;background:rgba(21,19,28,.9);border:1px solid #5a2210;border-radius:18px;padding:16px}
+.q{font-weight:900;margin:16px 0 8px}.q small{display:block;font-weight:500;color:#9a93a6;font-size:12px}
+.q:first-child{margin-top:0}
+#stars{display:flex;gap:4px;justify-content:center}
+#stars button{font-size:40px;background:none;border:0;color:#4a4552;cursor:pointer;padding:0 2px;transition:transform .12s}
+#stars button.on{color:var(--gold);text-shadow:0 0 14px rgba(255,210,58,.7)}#stars button:active{transform:scale(1.25)}
+#stxt{text-align:center;color:#ffb02a;font-weight:800;min-height:22px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:8px 12px;font-size:13px;cursor:pointer}
+.chips button.on{background:rgba(255,120,40,.35);border-color:#ff8a2a}
+select,textarea{width:100%;padding:10px;border-radius:11px;background:#0f0d15;color:#fff;border:1px solid rgba(255,255,255,.18);font:inherit;font-size:14px}
+textarea{min-height:90px;resize:vertical}
+.cnt{text-align:right;font-size:11px;color:#777}
+#send{width:100%;margin-top:14px;padding:14px;border:0;border-radius:13px;font-size:17px;font-weight:900;color:#fff;background:linear-gradient(90deg,#ff5a1f,#ff9a2a);box-shadow:0 6px 20px rgba(255,90,31,.35);cursor:pointer}
+#send:disabled{opacity:.4;box-shadow:none}
+.gh{display:block;text-align:center;margin-top:10px;color:#9fd0ff;font-size:12.5px}
+.play{display:block;text-align:center;margin-top:16px;padding:12px;border-radius:13px;border:1px solid var(--line);background:#1d1a25;color:#fff;text-decoration:none;font-weight:800}
+.log{margin-top:18px;font-size:13px;color:#bbb}.log b{color:var(--gold)}
+#done{display:none;text-align:center;padding:26px 6px}#done .big{font-size:56px}#done h2{margin:6px 0}
+.priv{margin-top:14px;font-size:11.5px;color:#7d7787;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="kick">PLAYER FEEDBACK</span>
+    <h1>钢魂烈斗</h1><div class="en">STEEL SOUL</div>
+    <p class="hi">这个游戏是一个人做的。<b>你的每一句话都会直接变成下一次更新</b> 🔧<br><span style="color:#9a93a6;font-size:12.5px">Made by one person — your feedback goes straight into the next update.</span></p>
+  </div>
+  <div class="card" id="form">
+    <div class="q">1. 给这个游戏打几星？<small>How many stars?</small></div>
+    <div id="stars"></div><div id="stxt"></div>
+    <div class="q">2. 最喜欢哪一台机体？<small>Favorite mech?</small></div>
+    <select id="hero"><option>赤焰魂 BLAZE-01</option><option>苍月 SABER</option><option>铁拳 GOLIATH</option><option>影刃 SHADE</option><option>雷神 VOLT</option><option>柠檬狼 LEMON WOLF</option><option>蔡俊祥（隐藏）</option><option>郑云鸿（隐藏）</option><option>还没玩到 / Not yet</option></select>
+    <div class="q">3. 哪里让你觉得爽？<small>What felt great? (pick any)</small></div><div class="chips" id="like"></div>
+    <div class="q">4. 哪里让你不爽？老实说没关系<small>What annoyed you? Be honest</small></div><div class="chips" id="bad"></div>
+    <div class="q">5. 如果你是开发者，你最想改什么？<small>If you were the developer, what would you change?</small></div>
+    <textarea id="txt" maxlength="160" placeholder="例如：Boss 太硬了 / 想要一台会飞的机体 / 第 4 章卡关…"></textarea><div class="cnt" id="cnt">0/160</div>
+    <button id="send" disabled>🚀 匿名提交 Submit</button>
+    <a class="gh" id="gh" href="#" target="_blank" rel="noopener">有 GitHub 帐号？也可以公开留言讨论 ↗</a>
+    <div class="priv">匿名提交，不收集名字、邮箱或任何个人资料。请不要在建议里写个人资料。</div>
+  </div>
+  <div class="card" id="done"><div class="big">🙏</div><h2>收到！谢谢你！</h2><div>你的意见会出现在下一次更新里。<br><span style="color:#9a93a6;font-size:13px">Thanks! Your feedback will shape the next update.</span></div>
+    <a class="gh" id="gh2" href="#" target="_blank" rel="noopener">想让其他玩家也看到？公开发到 GitHub ↗</a></div>
+  <a class="play" href="./">▶ 去玩游戏 Play the game</a>
+  <div class="log"><b>🔧 你们说，我们改</b><br><b>v2.1</b> 新手教学战、Boss 破防条、盾卫兵和自爆兵、English 版<br><b>v2.0</b> 电影级画面：调色、光尘、大招冲击模糊<br><b>v1.9</b> 最终 Boss 暗皇·虚无 ZERO 和通关大奖</div>
+</div>
+<script data-goatcounter="https://steelsoul.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+const LIKE=['🔥 打击感爽','🎬 出场动画帅','🤖 机体设计好看','🎵 音乐好听','💢 Boss 战刺激','😂 隐藏角色好笑'];
+const BAD=['😵 太难了','😴 太简单了','🐢 手机会卡','❓ 看不懂操作','🔁 打怪太重复','⏳ 进游戏太慢','🧩 想要更多关卡','🤖 想要更多机体'];
+const STXT=['','😢 让你失望了，告诉我哪里不好','😕 还不够好，我会继续改','🙂 还不错！哪里可以更好？','😄 很好玩！差一点就满分','🔥 满分！谢谢你的支持！'];
+const S={st:0,tags:new Set()}; const $=id=>document.getElementById(id);
+for(let i=1;i<=5;i++){ const b=document.createElement('button'); b.textContent='★'; b.onclick=()=>{ S.st=i; [...$('stars').children].forEach((x,j)=>x.classList.toggle('on',j<i)); $('stxt').textContent=STXT[i]; $('send').disabled=false; }; $('stars').appendChild(b); }
+const chips=(id,l)=>l.forEach(t=>{ const b=document.createElement('button'); b.textContent=t; b.onclick=()=>{ S.tags.has(t)?S.tags.delete(t):S.tags.add(t); b.classList.toggle('on'); }; $(id).appendChild(b); });
+chips('like',LIKE); chips('bad',BAD);
+$('txt').oninput=()=>$('cnt').textContent=$('txt').value.length+'/160';
+function sum(){ return {star:S.st,hero:$('hero').value,tags:[...S.tags].map(t=>t.replace(/^\S+\s/,'')),txt:$('txt').value.replace(/[\/\n\r]+/g,' ').trim().slice(0,160)}; }
+function ghUrl(){ const s=sum(); const body=`**评分**：${'★'.repeat(s.star)}${'☆'.repeat(5-s.star)}\n**最爱机体**：${s.hero}\n**标签**：${s.tags.join('、')||'-'}\n**建议**：${s.txt||'-'}\n\n_来自评价网页_`;
+  return 'https://github.com/pann-ish/steel-soul/issues/new?labels=feedback&title='+encodeURIComponent('玩家反馈 '+'★'.repeat(s.star)+' '+(s.txt.slice(0,30)||s.tags.slice(0,2).join(' ')))+'&body='+encodeURIComponent(body); }
+$('gh').onclick=$('gh2').onclick=e=>{ e.preventDefault(); window.open(ghUrl(),'_blank'); };
+$('send').onclick=()=>{ if(!S.st) return; const s=sum(); const path=['网页-反馈','★'+s.star,'机体:'+s.hero,'标签:'+(s.tags.join(',')||'-'),'建议:'+(s.txt||'-')].join('/');
+  const go=n=>{ if(window.goatcounter&&goatcounter.count){ goatcounter.count({path,title:s.txt||('★'+s.star),event:true}); } else if(n<8) setTimeout(()=>go(n+1),700); }; go(0);
+  $('form').style.display='none'; $('done').style.display='block'; window.scrollTo({top:0,behavior:'smooth'}); };
+</script>
+</body>
+</html>

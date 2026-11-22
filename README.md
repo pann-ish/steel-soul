@@ -12,6 +12,8 @@
 
 [![▶ 立即游玩 PLAY NOW](https://img.shields.io/badge/▶_立即游玩-PLAY_NOW-ff5a1f?style=for-the-badge)](https://pann-ish.github.io/steel-soul/)
 &nbsp;
+[![💬 玩家评价](https://img.shields.io/badge/💬_玩家评价-FEEDBACK-4fb4ff?style=for-the-badge&labelColor=333)](https://pann-ish.github.io/steel-soul/feedback.html)
+&nbsp;
 [![🔓 全解锁版](https://img.shields.io/badge/🔓_全解锁版-ALL_UNLOCKED-ffd23a?style=for-the-badge&labelColor=333)](https://pann-ish.github.io/steel-soul/all.html)
 
 ![Platform](https://img.shields.io/badge/平台-手机_|_电脑浏览器-222?style=flat-square)
