@@ -913,7 +913,7 @@ function dmgText(n,pos,big){ OV.pops.push({n,big,crit:big&&Math.random()<.6,life
   x.font=(big?'900 72px':'900 52px')+' Arial'; x.textAlign='center'; x.lineWidth=8; x.strokeStyle='#000'; x.strokeText(n,128,70); x.fillStyle=big?'#ffdd33':'#fff'; x.fillText(n,128,70);
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true})); sp.scale.set(big?2.4:1.6,big?.9:.6,1);
   sp.position.copy(pos).add(new THREE.Vector3((Math.random()-.5)*.8,.3,(Math.random()-.5)*.4)); sp.renderOrder=11; scene.add(sp); dmgSprites.push({sp,life:1.2});}
-function hitDummy(dmg,force,big){
+function hitDummy(dmg,force,big){ if(isJX()) dmg*=JXB.dmg;
   if(DUM.dead||DUM.spawn<1) return; dmg=elemDmg(dmg); statHit(dmg);
   DUM.hp-=dmg; DUM.kv+=force; DUM.flash=1; drawHP();
   const p=new THREE.Vector3(0,2.4,DZ+DUM.slide-.3); dmgText(dmg,p.clone().add(new THREE.Vector3(0,1,0)),big);
@@ -998,7 +998,7 @@ const cutBgG=(()=>{const c=document.createElement('canvas'); c.width=1024; c.hei
   const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; return t;})();
 const cutCam=new THREE.PerspectiveCamera(28,4,.05,100);
 function startCut(jp,en,green){ statAdd('specials'); OV.cut={t:0,dur:1.25,jp,en,green}; SFX.whoosh(.25,true,.6); }
-function useEN(n){ OV.en=Math.max(0,OV.en-n); }
+function useEN(n){ if(isJX()) n=Math.round(n*JXB.cost); OV.en=Math.max(0,OV.en-n); }
 function projectTo(v,W,H){const p=v.clone().project(camera); return [(p.x+1)/2*W,(1-p.y)/2*H,p.z<1];}
 function bar(x,y,w,h,r,col,flip){const c=octx; c.fillStyle='rgba(0,0,0,.6)'; c.fillRect(x,y,w,h); c.fillStyle=col; const ww=(w-4)*Math.max(0,Math.min(1,r)); c.fillRect(flip?x+w-2-ww:x+2,y+2,ww,h-4);}
 function drawOverlay(c,W,H,dt){
@@ -1599,7 +1599,8 @@ function spawnEnemy(boss,type='g'){
   emit(new THREE.Vector3(x,.2,z),new THREE.Vector3(0,1,0),24,.2,boss?0xd060ff:0xff8040); SFX.whoosh(.5,false,.5);
   return e;
 }
-function hitEnemy(e,dmg,force,big){
+const JXB={dmg:1.75,cost:.7,def:.7,enHit:4}; const isJX=()=>CUR==='junxiang';
+function hitEnemy(e,dmg,force,big){ if(isJX()){ dmg*=JXB.dmg; if(typeof OV!=='undefined'&&OV.enMax) OV.en=Math.min(OV.enMax,OV.en+JXB.enHit); }
   if(e.dead) return; dmg=elemDmg(dmg); statHit(dmg); e.hp-=dmg; e.flash=1;
   const dx=e.x-rig.position.x, dz=e.z-rig.position.z, d=Math.hypot(dx,dz)||1; e.vx+=dx/d*force*.45/e.mass; e.vz+=dz/d*force*.45/e.mass; e.stun=.4;
   const p=new THREE.Vector3(e.x-dx/d*e.r*.8,e.hitY,e.z-dz/d*e.r*.8); dmgText(dmg,p.clone().add(new THREE.Vector3(0,1,0)),big);
@@ -1607,7 +1608,7 @@ function hitEnemy(e,dmg,force,big){
   if(e.hp<=0) killEnemy(e);
 }
 function killEnemy(e){ if(e.train){ statAdd('dummyKills'); addCoins(2); } else { statAdd('kills'); addCoins(e.boss?10:1); } if(e.boss) statAdd('bossKills'); e.dead=true; e.deathT=0; e.hp=0; destroyFX(new THREE.Vector3(e.x,e.hitY,e.z),e.boss,e.boss?1.8:.7); SFX.boom(e.boss?2.4:1.3); emitDebris(new THREE.Vector3(e.x,e.hitY,e.z),e.boss?30:14,.3); }
-function damagePlayer(n,fx,fz){
+function damagePlayer(n,fx,fz){ if(isJX()) n*=JXB.def;
   if(busy()||PL.inv>0||PL.dead) return; if(LV.training) n=Math.min(n,Math.max(0,PL.hp-1));
   PL.hp=Math.max(0,PL.hp-n); PL.inv=.7; PL.flash=1; camKick=1.2; SFX.boom(.7);
   const dx=rig.position.x-fx, dz=rig.position.z-fz, d=Math.hypot(dx,dz)||1; PL.kvx=dx/d*9; PL.kvz=dz/d*9;
@@ -2503,7 +2504,7 @@ const slotsOf=k=>SLOTS[k]||[0,1,2];
 
 function heroTry(i){
   const H=HEROES[CUR], mv=H.moves[i]; if(!mv||busy()) return;
-  if(MODE==='level'){ if(PL.dead||LV.state!=='fight') return; if(OV.en<mv.cost){ toast('EN 不足！'); return; } pickTarget(); }
+  if(MODE==='level'){ if(PL.dead||LV.state!=='fight') return; if(OV.en<(isJX()?Math.round(mv.cost*JXB.cost):mv.cost)){ toast('EN 不足！'); return; } pickTarget(); }
   else { TGT=DZ; TGTY=2.3; }
   if(/^合体/.test(mv.name)) statAdd('combos'); useEN(mv.cost); gcT('招式/'+H.name+'/'+mv.name); HM.on=true; HM.move=mv; HM.T=0; HM.D={}; H.h.root.position.set(0,0,0);
   if(mv.cut) startCut(mv.cut[0],mv.cut[1],CUR==='lemonwolf'||CUR==='shade'?false:false);
@@ -3031,7 +3032,7 @@ function openHeroSel(mode){ playTrack('select'); musPreload([FLOW.stage||'space'
     d.onclick=()=>{ cards.querySelectorAll('.hc').forEach(x=>x.classList.toggle('on',x===d)); setHero(k); hsInfo(); }; cards.appendChild(d); });
   hsInfo(); }
 function hsInfoSk(){ renderSkins(); }
-function hsInfo(){ renderSkins(); renderUltRow(); const H=HEROES[CUR]; $('hsMoves').textContent=H.name+' · '+H.title+(fullSet(CUR)?'  ✨收藏全套：伤害+15%':''); }
+function hsInfo(){ renderSkins(); renderUltRow(); const H=HEROES[CUR]; $('hsMoves').textContent=H.name+' · '+H.title+(fullSet(CUR)?'  ✨收藏全套：伤害+15%':'')+(CUR==='junxiang'?'  🎉 社牛光环：伤害×1.75 · 耗能-30% · 受伤-30% · 每次命中回 EN':''); }
 $('hsBack').onclick=()=>{ APP.state='menu'; setScreen('menu'); };
 $('hsGo').onclick=()=>{ FLOW.hero=CUR; SAVE.hero=CUR; saveGame(); if(FLOW.mode==='campaign'){ endEntrance(); hidePlate(); entBGoff(); beginChapter(); } else openStageSel(); };
 function openStageSel(){ playTrack('select'); endEntrance(); hidePlate(); entBGoff(); APP.state='stage'; setScreen('stageSel'); const cards=$('ssCards'); cards.innerHTML='';
@@ -3791,7 +3792,7 @@ const ULTS={
 };
 function tryUlt(i){ if(busy()||ENTRY.t>=0||BASIC.t>=0&&BASIC.t<.1) return; const k=CUR, mv=ULTS[k][i];
   if(!ultOwned(k,i)){ toast('先在选英雄画面解锁「'+mv.name+'」！'); return; }
-  if(MODE==='level'){ if(PL.dead||LV.state!=='fight') return; if(OV.en<mv.cost){ toast('EN 不足！需要 '+mv.cost); return; } pickTarget(); } else { TGT=DZ; TGTY=2.3; }
+  if(MODE==='level'){ if(PL.dead||LV.state!=='fight') return; if(OV.en<(isJX()?Math.round(mv.cost*JXB.cost):mv.cost)){ toast('EN 不足！需要 '+mv.cost); return; } pickTarget(); } else { TGT=DZ; TGTY=2.3; }
   BASIC.t=-1; gcT('大招/'+HEROES[k].name+'/'+mv.name); const r=entRoot(k); r.position.set(0,0,0); r.rotation.set(0,0,0); useEN(mv.cost); ULT.on=true; ULT.k=k; ULT.mv=mv; ULT.T=0; ULT.D={}; startCut(mv.cut[0],mv.cut[1]); }
 function ultTick(dt){ if(!ULT.on) return; if(ULT.k!==CUR){ endUlt(); return; } if(cutFreeze()){ ULT.dt=0; return; } ULT.dt=dt; ULT.T+=dt; if(ULT.T>=ULT.mv.dur) endUlt(); }
 function ultPose(P){ if(!ULT.on||!ULT.dt) return; ULT.mv.run(ULT.T,ULT.dt,P,entRoot(ULT.k),ULT.D); }
@@ -3818,7 +3819,7 @@ function renderUltRow(){ const row=$('hsUlt'); if(!row) return; const k=CUR;
   u.querySelectorAll('button').forEach(b=>b.addEventListener('pointerdown',e=>{ e.stopPropagation(); initAudio(); tryUlt(+b.dataset.u); }));
   addEventListener('keydown',e=>{ const k=e.key.toLowerCase(); if(APP.state!=='game') return; if(k==='u') tryUlt(0); if(k==='i') tryUlt(1); }); })();
 let ubT=0; function ultButtonsTick(dt){ ubT-=dt; if(ubT>0||APP.state!=='game') return; ubT=.2;
-  document.querySelectorAll('#ubtns button').forEach(b=>{ const i=+b.dataset.u, own=ultOwned(CUR,i), mv=ULTS[CUR][i]; b.style.display=own?'':'none'; b.classList.toggle('ready',OV.en>=mv.cost); b.classList.toggle('low',OV.en<mv.cost); }); }
+  document.querySelectorAll('#ubtns button').forEach(b=>{ const i=+b.dataset.u, own=ultOwned(CUR,i), mv=ULTS[CUR][i]; b.style.display=own?'':'none'; b.classList.toggle('ready',OV.en>=mv.cost); b.classList.toggle('low',OV.en<(isJX()?Math.round(mv.cost*JXB.cost):mv.cost)); }); }
 // ---------- 4th normal-attack hit: big per-robot finisher ----------
 const FOURTH={
   blaze:{d:.7,h:.34,lg:1.1,area:'line',dmg:150,shout:'炎拳！',pose(P,q){ L(P,'rUp',-1.6,q); L(P,'rEl',0,q); L(P,'waistY',-.7,q); L(P,'lean',.45,q); L(P,'crouch',.3,q); },
