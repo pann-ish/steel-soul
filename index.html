@@ -1138,6 +1138,71 @@ if(THREE.EffectComposer && THREE.UnrealBloomPass){
   }catch(e){composer=null;}
 }
 composerBloom=composer; if(!Q.bloom) composer=null; if(composerBloom&&composerBloom.setPixelRatio) composerBloom.setPixelRatio(curPR);
+// ===== v2.0 cinematic beauty pass =====
+function isVoidFight(){ return typeof LV!=='undefined'&&LV.enemies&&LV.enemies.some(e=>e.void&&!e.dead); }
+const GRADE_FS=`
+uniform sampler2D tDiffuse; uniform float uTime,uVig,uCA,uBlur,uSat,uCon,uGrain,uSplit; uniform vec3 uTS,uTH; uniform vec2 uRes;
+varying vec2 vUv;
+void main(){
+  vec2 c=vUv-0.5; vec3 col;
+  if(uBlur>0.01){ col=vec3(0.0); for(int i=0;i<8;i++){ float s=1.0-uBlur*0.018*float(i); col+=texture2D(tDiffuse,0.5+c*s).rgb; } col/=8.0; }
+  else col=texture2D(tDiffuse,vUv).rgb;
+  if(uCA>0.01){ vec2 o=c*uCA*0.018; col.r=mix(col.r,texture2D(tDiffuse,vUv+o).r,0.85); col.b=mix(col.b,texture2D(tDiffuse,vUv-o).b,0.85); }
+  float l=dot(col,vec3(0.299,0.587,0.114));
+  col=mix(vec3(l),col,uSat);
+  col=(col-0.5)*uCon+0.5;
+  col+=mix(uTS,uTH,smoothstep(0.0,1.0,l))*uSplit;
+  col*=1.0-uVig*smoothstep(0.32,0.88,length(c*vec2(1.0,0.92)));
+  float n=fract(sin(dot(vUv*uRes+vec2(uTime*61.0,uTime*37.0),vec2(12.9898,78.233)))*43758.5453);
+  col+=(n-0.5)*uGrain;
+  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
+}`;
+const GRADE_VS=`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`;
+const GRADE_LOOK={ // shadow tint, highlight tint, saturation
+  space:[[0.05,0.25,0.55],[1.0,0.7,0.45],1.12], lava:[[0.35,0.05,0.12],[1.0,0.6,0.2],1.14], ice:[[0.15,0.35,0.6],[0.9,0.95,1.0],1.02],
+  storm:[[0.25,0.1,0.55],[0.7,0.8,1.0],1.08], shadow:[[0.3,0.0,0.45],[0.95,0.6,1.0],1.1], arena:[[0.15,0.1,0.3],[1.0,0.8,0.45],1.12],
+  party:[[0.4,0.05,0.4],[1.0,0.85,0.4],1.2], silent:[[0.0,0.25,0.25],[0.9,1.0,0.95],0.95], void:[[0.25,0.0,0.4],[0.8,0.55,1.0],1.05]};
+let GRADE=null;
+(function(){ try{
+  if(!composerBloom||!THREE.ShaderPass) return;
+  GRADE=new THREE.ShaderPass({uniforms:{tDiffuse:{value:null},uTime:{value:0},uVig:{value:.55},uCA:{value:0},uBlur:{value:0},uSat:{value:1.1},uCon:{value:1.06},
+    uGrain:{value:IS_MOBILE?.022:.03},uSplit:{value:.055},uTS:{value:new THREE.Vector3(.05,.25,.55)},uTH:{value:new THREE.Vector3(1,.7,.45)},uRes:{value:new THREE.Vector2(innerWidth,innerHeight)}},
+    vertexShader:GRADE_VS,fragmentShader:GRADE_FS});
+  composerBloom.addPass(GRADE);
+  const bp=composerBloom.passes.find(p=>p.constructor===THREE.UnrealBloomPass); if(bp){ bp.strength=.55; bp.radius=.42; bp.threshold=.88; }
+}catch(e){ GRADE=null; } })();
+let _gradeLook=GRADE_LOOK.space;
+function gradeTick(dt){ if(!GRADE) return; const u=GRADE.uniforms; u.uTime.value=(u.uTime.value+dt)%100;
+  const lk=isVoidFight()?GRADE_LOOK.void:(GRADE_LOOK[typeof STAGE!=='undefined'?STAGE:'space']||GRADE_LOOK.space);
+  if(lk!==_gradeLook){ _gradeLook=lk; } const k=Math.min(1,dt*3);
+  u.uTS.value.lerp(new THREE.Vector3(...lk[0]),k); u.uTH.value.lerp(new THREE.Vector3(...lk[1]),k); u.uSat.value+=(lk[2]-u.uSat.value)*k;
+  const kick=(typeof camKick!=='undefined'?camKick:0), ult=(typeof ULT!=='undefined'&&ULT.on);
+  const ca=Math.min(1.6,Math.max(0,kick-.3)*.9+(ult?.35:0)); u.uCA.value+=(ca-u.uCA.value)*Math.min(1,dt*14);
+  const bl=Math.min(1.4,Math.max(0,kick-.9)*1.2+((typeof hitStop!=='undefined'&&hitStop>0)?.6:0)); u.uBlur.value+=(bl-u.uBlur.value)*Math.min(1,dt*16);
+  u.uVig.value+=((ult?.8:.55)-u.uVig.value)*Math.min(1,dt*4);
+  u.uRes.value.set(innerWidth,innerHeight);
+}
+// ---- floating light motes ----
+const MOTES=(function(){ const N=IS_MOBILE?140:240, pos=new Float32Array(N*3), sp=new Float32Array(N);
+  for(let i=0;i<N;i++){ pos[i*3]=(Math.random()-.5)*60; pos[i*3+1]=Math.random()*18; pos[i*3+2]=(Math.random()-.5)*60; sp[i]=.2+Math.random()*.6; }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  const cv=document.createElement('canvas'); cv.width=cv.height=64; const x=cv.getContext('2d'); const gr=x.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(.35,'rgba(255,255,255,.45)'); gr.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=gr; x.fillRect(0,0,64,64);
+  const mat=new THREE.PointsMaterial({size:.22,map:new THREE.CanvasTexture(cv),transparent:true,opacity:.75,depthWrite:false,blending:THREE.AdditiveBlending,color:0x9fd0ff,sizeAttenuation:true});
+  const p=new THREE.Points(g,mat); p.frustumCulled=false; p.renderOrder=5; scene.add(p);
+  const COL={space:0x9fd0ff,lava:0xff8a3a,ice:0xffffff,storm:0xb79aff,shadow:0xc070ff,arena:0xffd27a,party:0xff7ae6,silent:0x6af0d0};
+  return {p,pos,sp,N,COL};
+})();
+function motesTick(dt){ const M=MOTES, c=camera.position, a=M.pos; const t=performance.now()*.001;
+  const col=isVoidFight()?0xa060ff:(M.COL[typeof STAGE!=='undefined'?STAGE:'space']||0x9fd0ff); M.p.material.color.lerp(new THREE.Color(col),Math.min(1,dt*2));
+  for(let i=0;i<M.N;i++){ const j=i*3; a[j+1]+=M.sp[i]*dt; a[j]+=Math.sin(t*.7+i)*dt*.25;
+    if(a[j+1]>18) a[j+1]=0; let dx=a[j]-c.x, dz=a[j+2]-c.z; if(dx>30) a[j]-=60; else if(dx<-30) a[j]+=60; if(dz>30) a[j+2]-=60; else if(dz<-30) a[j+2]+=60; }
+  M.p.geometry.attributes.position.needsUpdate=true; M.p.visible=(typeof NOSPACE!=='undefined')?true:true; }
+// ---- stronger metal reflections on mechs ----
+function boostMetal(root){ root.traverse(o=>{ const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[]; ms.forEach(m=>{ if(m&&m.isMeshStandardMaterial&&!m._boost){ m._boost=1; m.envMapIntensity=(m.metalness>.5?1.45:1.15); m.needsUpdate=true; } }); }); }
+setTimeout(()=>{ try{ boostMetal(scene); }catch(e){} },1200);
+setInterval(()=>{ try{ if(typeof HEROES!=='undefined') Object.values(HEROES).forEach(H=>H.h&&H.h.root&&boostMetal(H.h.root)); if(typeof rig!=='undefined') boostMetal(rig); }catch(e){} },4000);
+
 
 // ================= Camera orbit =================
 let theta=1.0, phi=1.3, dist=15; const target=new THREE.Vector3(0,3.2,0);
@@ -4304,6 +4369,7 @@ function animate(){
   camCollide();
   shake+=camKick*.02;
   if(shake){camera.position.x+=(Math.random()-.5)*shake*4; camera.position.y+=(Math.random()-.5)*shake*4;}
+  try{ gradeTick(rdt||dt); motesTick(rdt||dt); }catch(e){}
   composer? composer.render() : renderer.render(scene,camera);
   // adaptive resolution: drop pixel ratio when frames are slow, recover when smooth
   PERF.acc+=rdt; PERF.n++; if(PERF.acc>1.5&&!rec){ const fps=PERF.n/PERF.acc; PERF.acc=0; PERF.n=0;

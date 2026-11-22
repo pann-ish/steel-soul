@@ -17,7 +17,7 @@
 ![Platform](https://img.shields.io/badge/平台-手机_|_电脑浏览器-222?style=flat-square)
 ![Engine](https://img.shields.io/badge/引擎-three.js_3D-222?style=flat-square)
 ![PWA](https://img.shields.io/badge/可安装成App-离线可玩-222?style=flat-square)
-![Version](https://img.shields.io/badge/版本-v1.9-ff5a1f?style=flat-square)
+![Version](https://img.shields.io/badge/版本-v2.0-ff5a1f?style=flat-square)
 
 </div>
 
