@@ -19,7 +19,7 @@
 ![Platform](https://img.shields.io/badge/平台-手机_|_电脑浏览器-222?style=flat-square)
 ![Engine](https://img.shields.io/badge/引擎-three.js_3D-222?style=flat-square)
 ![PWA](https://img.shields.io/badge/可安装成App-离线可玩-222?style=flat-square)
-![Version](https://img.shields.io/badge/版本-v2.3-ff5a1f?style=flat-square)
+![Version](https://img.shields.io/badge/版本-v2.4-ff5a1f?style=flat-square)
 
 </div>
 
@@ -37,6 +37,7 @@
 | 💢 **Boss 破防条** | 连击打满黄色破防条，Boss 倒地伤害 ×2 |
 | 🛡️ **新敌人** | 盾卫兵（要绕背）、自爆兵（看到红圈快跑） |
 | 🌐 **中文 / English** | 一键切换语言 |
+| 💚 **补给系统** | 打倒敌人掉落血包 / 能量包，补给箱随机空投，血量不会自动回复 |
 | ☠ **困难模式** | Boss 10 万血以上、敌人更强更快，奖励 ×3 |
 | 🎨 **皮肤系统** | 黄金、暗黑、极光、虚无皮肤，招式特效颜色会跟着变 |
 | 🎬 **电影级选人镜头** | 低角度、冲击推镜、360° 环绕、面部特写 |
