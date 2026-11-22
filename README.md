@@ -17,7 +17,7 @@
 ![Platform](https://img.shields.io/badge/平台-手机_|_电脑浏览器-222?style=flat-square)
 ![Engine](https://img.shields.io/badge/引擎-three.js_3D-222?style=flat-square)
 ![PWA](https://img.shields.io/badge/可安装成App-离线可玩-222?style=flat-square)
-![Version](https://img.shields.io/badge/版本-v2.0-ff5a1f?style=flat-square)
+![Version](https://img.shields.io/badge/版本-v2.1-ff5a1f?style=flat-square)
 
 </div>
 
@@ -31,6 +31,10 @@
 | 💥 **极必杀 & 奥义** | 用币解锁，耗尽能量放出全屏动画大招 |
 | 🗺️ **10 章闯关战役** | 剧情、杂兵波次、Boss 战，最终挑战暗紫色的「暗皇·虚无 ZERO」 |
 | ⚡ **躲避反击** | Boss 重击前抓准时机闪避，打出 PERFECT / GREAT 电击反击 |
+| 🎓 **新手教学战** | 第一次打开直接开打，边打边教，随时可跳过 |
+| 💢 **Boss 破防条** | 连击打满黄色破防条，Boss 倒地伤害 ×2 |
+| 🛡️ **新敌人** | 盾卫兵（要绕背）、自爆兵（看到红圈快跑） |
+| 🌐 **中文 / English** | 一键切换语言 |
 | 🎨 **皮肤系统** | 黄金、暗黑、极光、虚无皮肤，招式特效颜色会跟着变 |
 | 🎬 **电影级选人镜头** | 低角度、冲击推镜、360° 环绕、面部特写 |
 | 🎵 **原创配乐** | 封面、选人、每个关卡都有不同的 BGM |
