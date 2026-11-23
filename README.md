@@ -25,6 +25,14 @@
 
 ---
 
+## 🍰 新游戏：月光烘焙坊
+
+粉黄色的甜点店经营小游戏。店长兼甜点师 **骆捷赢** 在后厨烤点心，招呼堂食和外带客人，还能把甜点换成你自己拍的照片。
+
+[![🍰 立即游玩 月光烘焙坊](https://img.shields.io/badge/🍰_立即游玩-月光烘焙坊-ff5c9a?style=for-the-badge&labelColor=ffd23f)](https://pann-ish.github.io/steel-soul/bakery/)
+
+---
+
 ## 🎮 游戏特色 Features
 
 | | |
