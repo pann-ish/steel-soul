@@ -33,6 +33,26 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Noto Sans SC"
 .shake{animation:shake .35s}
 @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 .panel{padding:12px;flex:1}
+.strip{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fff;border-bottom:3px solid var(--pink2);position:sticky;top:50px;z-index:4}
+.strip b{font-family:"ZCOOL KuaiLe",cursive;font-weight:400;font-size:18px;color:var(--pink);white-space:nowrap}
+.sbar{flex:1;height:10px;border-radius:6px;background:#ffe3ee;overflow:hidden}
+.sbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--yel),var(--pink));transition:width .4s}
+.strip .sp{font-size:13px;font-weight:900;white-space:nowrap}
+.lives{color:var(--pink);font-size:15px;letter-spacing:-1px;white-space:nowrap}
+.ib{flex:none;width:40px;height:40px;border-radius:12px;border:0;background:var(--yel);display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 0 #e0a800}
+.ib svg{width:20px;height:20px}
+.ib:focus-visible{outline:3px solid var(--ink)}
+.set{display:grid;gap:12px;margin-bottom:14px}
+.set label{display:grid;grid-template-columns:5.5em minmax(0,1fr) 3em;align-items:center;gap:10px;font-weight:700}
+.set input[type=range]{width:100%;accent-color:var(--pink);height:32px}
+.set .v{text-align:right;font-size:14px;color:var(--soft)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:30%;min-height:44px;border:2px solid #ffd6e6;border-radius:12px;background:#fff;font:700 14px "Noto Sans SC",sans-serif;color:var(--ink);cursor:pointer}
+.seg button.on{background:var(--pink);color:#fff;border-color:var(--pink)}
+.tg{display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.tg button{min-width:72px}
+.big{font-size:52px;text-align:center;margin:4px 0}
+.ups .row .info span b{display:inline;color:var(--pink)}
 .hint{display:flex;gap:10px;align-items:center;background:#fff;border:3px solid var(--yel);border-radius:16px;padding:10px 12px;font-weight:700;font-size:15px;box-shadow:0 4px 0 #f0c020}
 .hint .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--yel);display:grid;place-items:center;font-weight:900}
 .chef{display:flex;gap:10px;align-items:center;background:#fff;border-radius:16px;padding:8px 12px;margin-top:10px;box-shadow:0 4px 0 var(--pink2)}
@@ -91,7 +111,12 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Noto Sans SC"
     <div class="chip lv" id="lv">Lv 1<span class="bar"><i id="xpb"></i></span></div>
     <div class="chip" id="rate">★ 5.0</div>
   </div>
-  <svg id="sc" viewBox="0 0 800 900" aria-label="甜点店广角画面">
+  <div class="strip">
+    <b id="stg">第 1 关</b><div class="sbar"><i id="sbar"></i></div><span class="sp" id="sprog">0/8</span><span class="lives" id="lives">♥♥♥</span>
+    <button class="ib" id="bPause" aria-label="暂停"><svg viewBox="0 0 20 20"><rect x="4" y="3" width="4" height="14" rx="1.5" fill="#5a2340"/><rect x="12" y="3" width="4" height="14" rx="1.5" fill="#5a2340"/></svg></button>
+    <button class="ib" id="bSet" aria-label="设定"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm9 4.6v-2.2l-2.4-.5a7 7 0 0 0-.8-1.9l1.4-2-1.6-1.6-2 1.4a7 7 0 0 0-1.9-.8L13.1 3h-2.2l-.5 2.4a7 7 0 0 0-1.9.8l-2-1.4-1.6 1.6 1.4 2a7 7 0 0 0-.8 1.9L3 10.9v2.2l2.4.5c.2.7.4 1.3.8 1.9l-1.4 2 1.6 1.6 2-1.4c.6.4 1.2.6 1.9.8l.5 2.4h2.2l.5-2.4c.7-.2 1.3-.4 1.9-.8l2 1.4 1.6-1.6-1.4-2c.4-.6.6-1.2.8-1.9z" fill="#5a2340"/></svg></button>
+  </div>
+  <svg id="sc" viewBox="0 0 800 1000" aria-label="甜点店广角画面">
     <defs id="defs"></defs>
     <g id="bg"></g>
     <g id="decor"></g>
@@ -116,7 +141,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Noto Sans SC"
   </div>
   <div class="nav">
     <button id="bRecipes">食谱 · 照片</button>
-    <button id="bShop">装修商店</button>
+    <button id="bShop">升级 · 装修</button>
     <button id="bStats">店铺档案</button>
   </div>
 </div>
@@ -157,6 +182,94 @@ let S;
 try{S=Object.assign({},def,JSON.parse(localStorage.getItem('moonBakery')||'{}'))}catch(e){S=Object.assign({},def)}
 S.ovens=S.ovens.map(o=>o?{r:o.r,s:o.s||Date.now()}:null);
 let PH={};try{PH=JSON.parse(localStorage.getItem('moonBakeryPhotos')||'{}')}catch(e){}
+let paused=false,pauseAt=0,pausedAcc=0;
+const gnow=()=>(paused?pauseAt:Date.now())-pausedAcc;
+let SET={music:.5,sfx:.7,track:0,hints:true,auto:true};
+try{Object.assign(SET,JSON.parse(localStorage.getItem('moonBakerySet')||'{}'))}catch(e){}
+const saveSet=()=>{try{localStorage.setItem('moonBakerySet',JSON.stringify(SET))}catch(e){}};
+S.stage=S.stage||1;S.sServed=S.sServed||0;S.sMiss=S.sMiss||0;S.upOven=S.upOven||0;S.upWarm=S.upWarm||0;S.upPat=S.upPat||0;
+const goal=st=>6+st*2;
+const bakeMult=()=>Math.max(.35,(1-.03*(S.lv-1))*Math.pow(.9,S.upOven));
+const odur=o=>o.d||rec(o.r).sec*1000;
+const FRESH=()=>5000+S.upWarm*2500;
+const patMult=()=>Math.max(.42,1-(S.stage-1)*.07)*(1+.1*S.upPat);
+const spawnMult=()=>Math.max(.45,1-(S.stage-1)*.06);
+
+/* ---------- gentle music & sound effects (Web Audio, no files) ---------- */
+const AU={ctx:null,mg:null,sg:null,tm:null,ev:[],pos:0,t0:0,loopLen:0,bpm:80};
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+function audioInit(){
+ if(AU.ctx){if(AU.ctx.state==='suspended'&&!paused)AU.ctx.resume();return}
+ const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+ const ctx=new C();AU.ctx=ctx;
+ const master=ctx.createGain();master.connect(ctx.destination);
+ const rv=ctx.createConvolver(),len=Math.floor(ctx.sampleRate*2.4),buf=ctx.createBuffer(2,len,ctx.sampleRate);
+ for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3.2)}
+ rv.buffer=buf;const rg=ctx.createGain();rg.gain.value=.32;rv.connect(rg);rg.connect(master);
+ const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3200;lp.connect(master);lp.connect(rv);
+ AU.mg=ctx.createGain();AU.mg.connect(lp);
+ AU.sg=ctx.createGain();AU.sg.connect(master);const sr=ctx.createGain();sr.gain.value=.5;AU.sg.connect(sr);sr.connect(rv);
+ applyVol();startMusic(true);if(paused)ctx.suspend();
+}
+function applyVol(){if(!AU.ctx)return;AU.mg.gain.setTargetAtTime(SET.music*.32,AU.ctx.currentTime,.1);AU.sg.gain.setTargetAtTime(SET.sfx*.55,AU.ctx.currentTime,.05)}
+function tone(dest,t,m,dur,vol,inst){
+ const ctx=AU.ctx,g=ctx.createGain(),f=mtof(m);g.connect(dest);
+ const os=[];const add=(type,mul,v,det=0)=>{const o=ctx.createOscillator();o.type=type;o.frequency.value=f*mul;o.detune.value=det;const gg=ctx.createGain();gg.gain.value=v;o.connect(gg);gg.connect(g);os.push(o)};
+ let a=.012,rel=dur;
+ if(inst==='ep'){add('sine',1,1);add('sine',2,.18,4);add('triangle',1,.12,-3);rel=dur*1.2}
+ else if(inst==='box'){add('sine',1,1);add('sine',4,.12);add('sine',3,.06);a=.004;rel=Math.max(1.4,dur)}
+ else if(inst==='bass'){add('sine',1,1);add('triangle',1,.25);a=.02}
+ else if(inst==='pad'){add('triangle',1,.6,-6);add('triangle',1,.6,6);a=Math.min(.6,dur/3)}
+ else{add('sine',1,1);add('triangle',2,.15)}
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+a);
+ if(inst==='pad'){g.gain.setValueAtTime(vol,t+dur*.7);g.gain.linearRampToValueAtTime(0,t+dur)}
+ else g.gain.exponentialRampToValueAtTime(.0008,t+rel);
+ const end=t+(inst==='pad'?dur:rel)+.05;os.forEach(o=>{o.start(t);o.stop(end)});
+}
+const TRACKS=[
+ {bpm:78,B:4,lead:'ep',chords:[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]],bass:[41,40,38,36],comp:[[0,1.4,.5],[1.5,.9,.32],[3,.9,.3]],seed:7},
+ {bpm:100,B:3,lead:'box',chords:[[60,64,67],[57,60,64],[53,57,60],[55,59,62]],bass:[36,33,29,31],comp:[[1,.8,.3],[2,.8,.26]],seed:21},
+ {bpm:62,B:4,lead:'ep',chords:[[50,53,57,60,64],[55,59,62,65],[48,52,55,59,62],[57,61,64,67]],bass:[38,43,36,45],comp:[[0,3.8,.28,'pad'],[2.5,.8,.25]],seed:42}
+];
+function buildLoop(T){
+ let sd=T.seed;const rng=()=>(sd=(sd*9301+49297)%233280)/233280;
+ const scale=[0,2,4,5,7,9,11];const inScale=m=>scale.includes(((m%12)+12)%12);
+ const rh4=[[0,2],[0,1,2,3],[0,1.5,3],[0,1,1.5,2,3],[0,.5,1,2],[0,2,3]],rh3=[[0,1,2],[0,2],[0,1.5,2],[0]];
+ const phrase=()=>{let prev=74;const bars=[];for(let b=0;b<4;b++){const ch=T.chords[b];const rs=T.B===4?rh4:rh3;const rhy=b===3?[0]:rs[Math.floor(rng()*rs.length)];
+  const notes=rhy.map((o,k)=>{const strong=o%1===0;let cand=[];for(let m=64;m<=86;m++){if(!inScale(m))continue;const ct=ch.some(c=>((c-m)%12+12)%12===0);if(strong&&!ct)continue;cand.push(m)}
+   cand.sort((x,y)=>Math.abs(x-prev)+rng()*4-(Math.abs(y-prev)+rng()*4));const m=cand[0];prev=m;const nx=k+1<rhy.length?rhy[k+1]:T.B;return{o,m,d:nx-o}});
+  bars.push(notes)}return bars};
+ const A=phrase(),Bp=phrase(),form=[A,A,Bp,A];const ev=[];
+ for(let b=0;b<16;b++){const ci=b%4,base=b*T.B;
+  ev.push({b:base,m:T.bass[ci],d:T.B*.9,v:.5,i:'bass'});
+  for(const [o,d,v,inst] of T.comp)for(const n of T.chords[ci])ev.push({b:base+o,m:n,d,v:v/T.chords[ci].length*1.6,i:inst||T.lead});
+  for(const n of form[Math.floor(b/4)][ci])ev.push({b:base+n.o,m:n.m,d:n.d,v:.42,i:T.lead});
+ }
+ ev.sort((x,y)=>x.b-y.b);return{ev,len:16*T.B};
+}
+function startMusic(reset){
+ if(!AU.ctx)return;const T=TRACKS[SET.track]||TRACKS[0],L=buildLoop(T);
+ AU.ev=L.ev;AU.loopLen=L.len;AU.bpm=T.bpm;AU.pos=0;AU.t0=AU.ctx.currentTime+.15;
+ if(AU.tm)clearInterval(AU.tm);
+ AU.tm=setInterval(()=>{const ctx=AU.ctx;if(!ctx||ctx.state!=='running'||SET.music<=0)return;const spb=60/AU.bpm,ahead=ctx.currentTime+.4;
+  while(true){const e=AU.ev[AU.pos%AU.ev.length],loop=Math.floor(AU.pos/AU.ev.length),t=AU.t0+(loop*AU.loopLen+e.b)*spb;
+   if(t>ahead)break;if(t>ctx.currentTime-.05)tone(AU.mg,t,e.m,e.d*spb,e.v,e.i);AU.pos++}
+ },60);
+}
+function sfx(k){
+ if(!AU.ctx||AU.ctx.state!=='running'||SET.sfx<=0)return;const t=AU.ctx.currentTime+.01,d=AU.sg;
+ const seq={coin:[[88,0,.25,.5],[93,.08,.35,.45]],done:[[79,0,.3,.4],[84,.12,.3,.4],[88,.24,.5,.4]],pop:[[76,0,.12,.4],[81,.05,.15,.3]],
+  sad:[[64,0,.3,.35],[60,.18,.5,.35]],lvl:[[72,0,.15,.4],[76,.09,.15,.4],[79,.18,.15,.4],[84,.27,.5,.45]],
+  clear:[[72,0,.2,.4],[76,.12,.2,.4],[79,.24,.2,.4],[84,.36,.25,.4],[88,.5,.9,.45],[79,.5,.9,.25],[76,.5,.9,.25]],
+  click:[[84,0,.06,.25]],bake:[[67,0,.2,.3],[71,.1,.3,.3]]}[k];
+ if(seq)for(const [m,o,du,v] of seq)tone(d,t+o,m,du,v,k==='sad'?'ep':'box');
+}
+document.addEventListener('pointerdown',()=>audioInit(),{passive:true});
+const UPG=[
+ {k:'upOven',n:'烤箱火力',d:'烘烤时间再缩短 10%',cost:[120,260,480,800,1200]},
+ {k:'upWarm',n:'保温灯',d:'「刚出炉 +1份」的时间多 2.5 秒',cost:[100,220,400]},
+ {k:'upPat',n:'舒适座椅',d:'客人愿意多等 10%',cost:[150,300,550,900]}
+];
 const save=()=>{try{localStorage.setItem('moonBakery',JSON.stringify(S))}catch(e){}};
 const savePH=()=>{try{localStorage.setItem('moonBakeryPhotos',JSON.stringify(PH));return true}catch(e){return false}};
 const need=l=>15+l*20;
@@ -212,41 +325,53 @@ const artH=id=>PH[id]?`<img class="ph" src="${PH[id]}" alt="">`:`<svg viewBox="0
 
 /* ---------- static shop background ---------- */
 const OVX=i=>30+i*150;
-const TB=[{x:120,y:650},{x:330,y:650},{x:120,y:815},{x:330,y:815}].map(t=>Object.assign(t,{occ:null,dirty:false,food:null,clearing:false}));
+const TB=[{x:110,y:665},{x:390,y:665},{x:110,y:885},{x:390,y:885}].map(t=>Object.assign(t,{occ:null,dirty:false,food:null,clearing:false}));
 const QS=[[150,494],[300,494],[450,494]];
-const DOOR=[740,910];
+const DOOR=[740,1012];
 $('bg').innerHTML=`
 <rect width="800" height="240" fill="url(#pT)"/>
 <rect y="232" width="800" height="80" fill="url(#pK)"/>
-<rect y="400" width="800" height="500" fill="url(#pW)"/>
+<rect y="400" width="800" height="600" fill="url(#pW)"/>
 <rect x="0" y="0" width="625" height="34" fill="#ff8fb8"/>
 <path d="M0 34h625" stroke="#e0729c" stroke-width="4"/>
 <text x="312" y="24" text-anchor="middle" font-size="17" font-weight="900" fill="#fff">后厨 KITCHEN</text>
 <rect x="30" y="64" width="585" height="7" rx="3" fill="#d9a06a"/>
+<g transform="translate(250 40)"><ellipse cx="14" cy="22" rx="16" ry="4" fill="#ff8fb8"/><path d="M-2 10h32q-2 12-16 12t-16-12z" fill="#ffb3cf"/><ellipse cx="14" cy="10" rx="16" ry="4" fill="#fff"/><path d="M18 8l14-20" stroke="#bfb6c6" stroke-width="3"/><circle cx="33" cy="-13" r="4" fill="none" stroke="#bfb6c6" stroke-width="2"/></g>
+<g transform="translate(330 38)"><path d="M0 26l8-24h16l8 24z" fill="#fff" stroke="#ffb3cf" stroke-width="2"/><path d="M16 2v-6" stroke="#ff5c9a" stroke-width="3"/><path d="M40 26l6-20 8 20z" fill="#ffe98a" stroke="#e0b020" stroke-width="2"/></g>
+<g transform="translate(385 46)"><rect width="34" height="18" rx="4" fill="#fff8ec" stroke="#e2cfa8"/>${[6,17,28].map(x=>`<ellipse cx="${x}" cy="5" rx="4.5" ry="5.5" fill="#fff"/>`).join('')}</g>
+<g transform="translate(510 40)"><rect x="0" y="16" width="36" height="8" rx="2" fill="#bfb6c6"/><rect x="2" y="8" width="32" height="8" rx="2" fill="#d6cfdc"/><ellipse cx="18" cy="6" rx="14" ry="3" fill="#ffb3cf"/><rect x="16" y="-6" width="4" height="12" fill="#ffb3cf"/></g>
+<g transform="translate(600 48)"><rect x="0" y="0" width="12" height="16" rx="4" fill="#ff8fb8"/><rect x="-2" y="14" width="16" height="4" rx="2" fill="#fff"/></g>
 ${[[60,'#fff','#ff8fb8'],[100,'#ffe98a','#e0b020'],[140,'#fff','#c9c2f0'],[430,'#ffd3b8','#ff9f7a'],[470,'#fff','#3fcf9a'],[560,'#ffe98a','#ff8fb8']].map(([x,a,b])=>`<rect x="${x}" y="42" width="26" height="22" rx="5" fill="${a}" stroke="${b}" stroke-width="2"/><rect x="${x+4}" y="38" width="18" height="6" rx="2" fill="${b}"/>`).join('')}
 <g transform="translate(200 40)"><path d="M0 24q14-30 28 0" stroke="#bfb6c6" stroke-width="3" fill="none"/><path d="M40 0v24M36 0h8" stroke="#bfb6c6" stroke-width="3"/><ellipse cx="40" cy="20" rx="6" ry="4" fill="#bfb6c6"/><path d="M70 2l10 20" stroke="#d9a06a" stroke-width="6" stroke-linecap="round"/><path d="M180 6h46" stroke="#d9a06a" stroke-width="8" stroke-linecap="round"/><circle cx="176" cy="6" r="4" fill="#c48336"/><circle cx="230" cy="6" r="4" fill="#c48336"/></g>
 <rect x="640" y="40" width="82" height="194" rx="8" fill="url(#gSteel)" stroke="#bdb4c4" stroke-width="2"/>
 <path d="M640 110h82" stroke="#bdb4c4" stroke-width="2"/><rect x="708" y="62" width="5" height="34" rx="2" fill="#a59cb0"/><rect x="708" y="128" width="5" height="50" rx="2" fill="#a59cb0"/>
 <rect x="648" y="48" width="22" height="16" rx="3" fill="#ffe98a"/><circle cx="690" cy="58" r="7" fill="#ff8fb8"/>
-<rect x="730" y="150" width="70" height="84" fill="#fff" stroke="#f0d6e2"/><rect x="726" y="146" width="78" height="8" rx="3" fill="#ffb3cf"/>
+<rect x="730" y="150" width="70" height="84" fill="#fff" stroke="#f0d6e2"/>
+<g transform="translate(726 42)"><rect x="4" y="0" width="68" height="6" rx="3" fill="#bfb6c6"/>
+<path d="M14 6v14M14 20q-7 10 0 26q7-16 0-26M10 30q4 14 8 0" stroke="#a59cb0" stroke-width="2.5" fill="none"/>
+<path d="M30 6v26" stroke="#d9a06a" stroke-width="4" stroke-linecap="round"/><rect x="25" y="30" width="10" height="16" rx="4" fill="#ff8fb8"/>
+<path d="M48 6v24" stroke="#a59cb0" stroke-width="3"/><path d="M40 30a8 8 0 0 0 16 0z" fill="#bfb6c6"/>
+<path d="M64 6v6" stroke="#a59cb0" stroke-width="2"/><path d="M58 12h12v16q0 8-8 8h-4z" fill="#ffd23f"/><rect x="58" y="12" width="12" height="5" fill="#ff8fb8"/></g>
+<g transform="translate(646 20)"><rect x="0" y="12" width="70" height="7" rx="2" fill="#bfb6c6"/><rect x="4" y="5" width="62" height="7" rx="2" fill="#d6cfdc"/><rect x="8" y="-2" width="54" height="7" rx="2" fill="#e6dfe8"/></g>
+<g transform="translate(784 256)"><path d="M-14 50q-4-36 4-46h20q8 10 4 46z" fill="#fff8ec" stroke="#e2cfa8" stroke-width="2"/><path d="M-10 4q10-8 20 0" stroke="#e2cfa8" stroke-width="3" fill="none"/><text y="32" text-anchor="middle" font-size="10" font-weight="900" fill="#c48336">面粉</text></g><rect x="726" y="146" width="78" height="8" rx="3" fill="#ffb3cf"/>
 <g transform="translate(742 104)"><path d="M6 42h34v-6H6z" fill="#ff8fb8"/><path d="M28 40V6q0-6-8-6H8q-6 0-6 8v4h22v28z" fill="#ff8fb8"/><ellipse cx="13" cy="30" rx="11" ry="8" fill="#e8e2ec"/><path d="M13 14v10" stroke="#bfb6c6" stroke-width="3"/></g>
 <text x="720" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#c47a99">员工通道</text>
 <path d="M700 392h40" stroke="#c47a99" stroke-width="2" stroke-dasharray="4 3"/>
 <g transform="translate(470 520)"><rect x="-70" y="-14" width="140" height="28" rx="14" fill="#fff" stroke="#ffb3cf" stroke-width="3"/><text y="6" text-anchor="middle" font-size="15" font-weight="900" fill="#ff5c9a">外带取餐区</text></g>
-<text x="225" y="572" text-anchor="middle" font-size="15" font-weight="900" fill="#c47a99">堂食区</text>
-<rect x="680" y="790" width="114" height="110" fill="#fff" stroke="#ffb3cf" stroke-width="5"/>
-<rect x="692" y="802" width="42" height="98" fill="#d8f2ff" stroke="#fff" stroke-width="3"/><rect x="740" y="802" width="42" height="98" fill="#d8f2ff" stroke="#fff" stroke-width="3"/>
-<path d="M698 820l20-12M746 820l20-12" stroke="#fff" stroke-width="4"/>
-<rect x="706" y="768" width="62" height="22" rx="6" fill="#ff5c9a"/><text x="737" y="784" text-anchor="middle" font-size="14" font-weight="900" fill="#fff">入口</text>
-<g transform="translate(600 780)"><path d="M-22 60l10-60h24l10 60" fill="none" stroke="#a87048" stroke-width="5"/><rect x="-30" y="-50" width="60" height="56" rx="6" fill="#3a3340" stroke="#a87048" stroke-width="4"/><text y="-30" text-anchor="middle" font-size="12" font-weight="900" fill="#ffd23f">今日推荐</text><text y="-12" text-anchor="middle" font-size="11" fill="#fff">现烤点心</text><text y="2" text-anchor="middle" font-size="11" fill="#ff8fb8">♥ 骆店长</text></g>`;
+<text x="250" y="582" text-anchor="middle" font-size="15" font-weight="900" fill="#c47a99">堂食区</text>
+<rect x="680" y="890" width="114" height="110" fill="#fff" stroke="#ffb3cf" stroke-width="5"/>
+<rect x="692" y="902" width="42" height="98" fill="#d8f2ff" stroke="#fff" stroke-width="3"/><rect x="740" y="902" width="42" height="98" fill="#d8f2ff" stroke="#fff" stroke-width="3"/>
+<path d="M698 920l20-12M746 920l20-12" stroke="#fff" stroke-width="4"/>
+<rect x="706" y="868" width="62" height="22" rx="6" fill="#ff5c9a"/><text x="737" y="884" text-anchor="middle" font-size="14" font-weight="900" fill="#fff">入口</text>
+<g transform="translate(600 860)"><path d="M-22 60l10-60h24l10 60" fill="none" stroke="#a87048" stroke-width="5"/><rect x="-30" y="-50" width="60" height="56" rx="6" fill="#3a3340" stroke="#a87048" stroke-width="4"/><text y="-30" text-anchor="middle" font-size="12" font-weight="900" fill="#ffd23f">今日推荐</text><text y="-12" text-anchor="middle" font-size="11" fill="#fff">现烤点心</text><text y="2" text-anchor="middle" font-size="11" fill="#ff8fb8">♥ 骆店长</text></g>`;
 $('chairs').innerHTML=TB.map(t=>`<rect x="${t.x-26}" y="${t.y-82}" width="52" height="60" rx="12" fill="#ff8fb8" stroke="#e0729c" stroke-width="3"/><rect x="${t.x-18}" y="${t.y-74}" width="36" height="10" rx="4" fill="#ffc2d9"/>`).join('');
 const DSVG={
- lamp:`<g transform="translate(500 700)"><path d="M0 0v-120" stroke="#a87048" stroke-width="5"/><ellipse cx="0" cy="2" rx="22" ry="6" fill="#a87048"/><path d="M-26-110h52l-12-34h-28z" fill="#ffe98a" stroke="#e0b020" stroke-width="3"/><ellipse cx="0" cy="-100" rx="60" ry="30" fill="#ffd23f22"/></g>`,
- plant:`<g transform="translate(560 700)"><path d="M0-40q-40-40-30-90q20 30 30 90q0-60 30-100q10 50-30 100q20-30 50-40q-10 40-50 40z" fill="#3fae5a"/><path d="M0-40q-10-30 0-70" stroke="#2c8a45" stroke-width="3" fill="none"/><path d="M-26-40h52l-8 42h-36z" fill="#ff9f7a"/><rect x="-30" y="-46" width="60" height="10" rx="4" fill="#ffb38a"/></g>`,
+ lamp:`<g transform="translate(560 780)"><path d="M0 0v-120" stroke="#a87048" stroke-width="5"/><ellipse cx="0" cy="2" rx="22" ry="6" fill="#a87048"/><path d="M-26-110h52l-12-34h-28z" fill="#ffe98a" stroke="#e0b020" stroke-width="3"/><ellipse cx="0" cy="-100" rx="60" ry="30" fill="#ffd23f22"/></g>`,
+ plant:`<g transform="translate(655 760)"><path d="M0-40q-40-40-30-90q20 30 30 90q0-60 30-100q10 50-30 100q20-30 50-40q-10 40-50 40z" fill="#3fae5a"/><path d="M0-40q-10-30 0-70" stroke="#2c8a45" stroke-width="3" fill="none"/><path d="M-26-40h52l-8 42h-36z" fill="#ff9f7a"/><rect x="-30" y="-46" width="60" height="10" rx="4" fill="#ffb38a"/></g>`,
  lights:`<path d="M0 6q78 26 156 0t156 0 156 0 156 0" stroke="#fff" stroke-width="2" fill="none"/>${Array.from({length:16},(_,i)=>`<circle cx="${20+i*38}" cy="${12+Math.abs(Math.sin(i*1.3))*10}" r="6" fill="${['#ffd23f','#3fcf9a','#fff','#7fd8ff'][i%4]}" stroke="#fff8" stroke-width="3"/>`).join('')}`,
- clock:`<g transform="translate(765 60)"><circle r="24" fill="#fff" stroke="#ff8fb8" stroke-width="5"/><path d="M0 0v-14M0 0l10 5" stroke="#5a2340" stroke-width="3" stroke-linecap="round"/><circle r="2.5" fill="#5a2340"/></g>`,
- rug:`<ellipse cx="225" cy="735" rx="215" ry="150" fill="#ffffff88" stroke="#ff8fb8" stroke-width="8" stroke-dasharray="2 12" stroke-linecap="round"/>`,
- rocket:`<g transform="translate(520 860)"><rect x="-50" y="-60" width="100" height="10" rx="4" fill="#ff8fb8"/><rect x="-50" y="-20" width="100" height="10" rx="4" fill="#ff8fb8"/><path d="M-44-50v40M44-50v40" stroke="#e0729c" stroke-width="5"/><circle cx="-34" cy="0" r="9" fill="#5a2340"/><circle cx="34" cy="0" r="9" fill="#5a2340"/>${art('mc',-44,-98,44)}${art('cl',0,-100,46)}</g>`
+ clock:`<g transform="translate(592 17) scale(.6)"><circle r="24" fill="#fff" stroke="#ff8fb8" stroke-width="5"/><path d="M0 0v-14M0 0l10 5" stroke="#5a2340" stroke-width="3" stroke-linecap="round"/><circle r="2.5" fill="#5a2340"/></g>`,
+ rug:`<ellipse cx="250" cy="775" rx="245" ry="205" fill="#ffffff88" stroke="#ff8fb8" stroke-width="8" stroke-dasharray="2 12" stroke-linecap="round"/>`,
+ rocket:`<g transform="translate(250 992)"><rect x="-50" y="-60" width="100" height="10" rx="4" fill="#ff8fb8"/><rect x="-50" y="-20" width="100" height="10" rx="4" fill="#ff8fb8"/><path d="M-44-50v40M44-50v40" stroke="#e0729c" stroke-width="5"/><circle cx="-34" cy="0" r="9" fill="#5a2340"/><circle cx="34" cy="0" r="9" fill="#5a2340"/>${art('mc',-44,-98,44)}${art('cl',0,-100,46)}</g>`
 };
 
 /* ---------- characters ---------- */
@@ -283,7 +408,7 @@ function bubble(c){
  return `<path d="M-7-95l7 8 7-8z" fill="#fff"/><rect x="-34" y="-160" width="68" height="66" rx="14" fill="#fff" stroke="${ok?'#3fcf9a':pend?'#ffd23f':'#ffb3cf'}" stroke-width="4"/>${art(c.want,-25,-158,50)}<rect x="-25" y="-106" width="50" height="5" rx="2.5" fill="#f3e4ea"/><rect class="pb" x="-25" y="-106" width="50" height="5" rx="2.5" fill="#ff5c9a"/>`;
 }
 /* ---------- state & rendering ---------- */
-let custs=[],cid=0,tasks=[],cur=null,curWait=0,nextSpawn=Date.now()+1200;
+let custs=[],cid=0,tasks=[],cur=null,curWait=0,nextSpawn=gnow()+1200;
 function drawCust(c){
  const show=c.state==='wait'||c.state==='pending';
  c.el.innerHTML=`<g class="inner"><rect x="-24" y="-88" width="48" height="90" fill="transparent"/>${person(c)}</g>`;
@@ -292,21 +417,21 @@ function drawCust(c){
 }
 const refreshBubbles=()=>custs.forEach(c=>{if(c.state==='wait')drawCust(c)});
 let oKey='';
-function ovState(o,now){if(!o)return'e';const el=now-o.s-rec(o.r).sec*1000;return(o.col?'c':el<0?'b':el<5000?'f':'d')+o.r}
+function ovState(o,now){if(!o)return'e';const el=now-o.s-odur(o);return(o.col?'c':el<0?'b':el<FRESH()?'f':'d')+o.r}
 function renderOvens(){
- const now=Date.now(),key=S.ovens.length+':'+S.ovens.map(o=>ovState(o,now)).join(',')+(PH.v||'');
+ const now=gnow(),key=S.ovens.length+':'+S.ovens.map(o=>ovState(o,now)).join(',')+(PH.v||'');
  if(key===oKey){
   S.ovens.forEach((o,i)=>{if(!o)return;const r=rec(o.r),el=now-o.s;const t=$('ot'+i),p=$('op'+i);if(!t)return;
-   if(el<r.sec*1000){t.textContent=Math.ceil(r.sec-el/1000)+'s';p.setAttribute('width',Math.min(107,el/(r.sec*1000)*107))}});
+   if(el<odur(o)){t.textContent=Math.ceil((odur(o)-el)/1000)+'s';p.setAttribute('width',Math.min(107,el/odur(o)*107))}});
   return}
  oKey=key;let h='';
  S.ovens.forEach((o,i)=>{const x=OVX(i),y=92;
   let st=o?ovState(o,now)[0]:'e',win,inner='',timer='--',lab='';
   if(st==='e'){win='#2a2430';inner=`<text x="${x+67}" y="${y+78}" text-anchor="middle" font-size="40" font-weight="900" fill="#ff8fb8">+</text>`;lab='点我烤点心'}
   else{const r=rec(o.r);win=st==='b'?'url(#gOn)':'url(#gDone)';inner=art(o.r,x+39,y+40,58);
-   timer=st==='b'?Math.ceil(r.sec-(now-o.s)/1000)+'s':st==='c'?'收取中':'好了!';
+   timer=st==='b'?Math.ceil((odur(o)-(now-o.s))/1000)+'s':st==='c'?'收取中':'好了!';
    lab=st==='b'?r.n:st==='f'?'刚出炉 +1份！':st==='c'?'店长来收了':'烤好了，点我'}
-  const p=o&&st==='b'?Math.min(107,(now-o.s)/(rec(o.r).sec*1000)*107):(st==='e'?0:107);
+  const p=o&&st==='b'?Math.min(107,(now-o.s)/odur(o)*107):(st==='e'?0:107);
   h+=`<g data-act="oven:${i}">${st==='f'||st==='d'?`<rect class="glow" x="${x-6}" y="${y-6}" width="147" height="150" rx="14" fill="none" stroke="#ffd23f" stroke-width="8"/>`:''}
   <rect x="${x}" y="${y}" width="135" height="140" rx="10" fill="url(#gSteel)" stroke="#bdb4c4" stroke-width="2"/>
   <rect x="${x+8}" y="${y+7}" width="70" height="22" rx="5" fill="#3a3340"/><text id="ot${i}" x="${x+43}" y="${y+24}" text-anchor="middle" font-size="15" font-weight="900" fill="#ff8fb8">${timer}</text>
@@ -331,7 +456,8 @@ function renderTables(){
   let top='';
   if(t.food)top=art(t.food,t.x-30,t.y-58,60);
   else if(t.dirty)top=`<ellipse cx="${t.x}" cy="${t.y-14}" rx="24" ry="8" fill="#fff" stroke="#e2d8e3" stroke-width="2"/><circle cx="${t.x-6}" cy="${t.y-15}" r="2" fill="#c98a3a"/><circle cx="${t.x+7}" cy="${t.y-13}" r="1.6" fill="#c98a3a"/><path d="M${t.x+10} ${t.y-20}l14-10" stroke="#bfb6c6" stroke-width="3"/><g class="glow"><rect x="${t.x-46}" y="${t.y-64}" width="92" height="26" rx="13" fill="#ffd23f"/><text x="${t.x}" y="${t.y-46}" text-anchor="middle" font-size="14" font-weight="900" fill="#5a2340">点我收拾</text></g>`;
-  const ck=t.dirty&&!t.clearing;return `<g ${ck?`data-act="table:${i}"`:'style="pointer-events:none"'}>${ck?`<rect x="${t.x-80}" y="${t.y-70}" width="160" height="150" fill="transparent"/>`:''}<path d="M${t.x-50} ${t.y+30}l-6 44M${t.x+50} ${t.y+30}l6 44" stroke="#a87048" stroke-width="7" stroke-linecap="round"/><path d="M${t.x-72} ${t.y-8}q0 40 10 40h124q10 0 10-40z" fill="#fff" stroke="#ffb3cf" stroke-width="3"/><path d="M${t.x-66} ${t.y+22}q11 8 22 0t22 0 22 0 22 0 22 0 22 0" stroke="#ff8fb8" stroke-width="3" fill="none"/><ellipse cx="${t.x}" cy="${t.y-8}" rx="74" ry="20" fill="#fff" stroke="#ffb3cf" stroke-width="3"/>${top}</g>`}).join('');
+  const ware=`<g transform="translate(${t.x-52} ${t.y-12})"><path d="M-6 0q-2-12 6-16q8 4 6 16z" fill="#bfe8ff" stroke="#fff" stroke-width="2"/><circle cx="-4" cy="-22" r="5" fill="#ff8fb8"/><circle cx="5" cy="-20" r="4" fill="#ffd23f"/><path d="M0-16v-6" stroke="#3fae5a" stroke-width="2"/></g><g transform="translate(${t.x+50} ${t.y-12})"><path d="M-8-12h16v8q0 6-8 6t-8-6z" fill="#fff" stroke="#ffb3cf" stroke-width="2"/><path d="M8-9q6 0 5 5t-6 3" stroke="#ffb3cf" stroke-width="2" fill="none"/><ellipse cx="0" cy="2" rx="12" ry="3" fill="#fff" stroke="#f3e4ea"/></g><g transform="translate(${t.x+28} ${t.y+2})"><path d="M0 0l-14 4M2 4l-14 4" stroke="#bfb6c6" stroke-width="2.5" stroke-linecap="round"/></g>`;
+  const ck=t.dirty&&!t.clearing;return `<g ${ck?`data-act="table:${i}"`:'style="pointer-events:none"'}>${ck?`<rect x="${t.x-80}" y="${t.y-70}" width="160" height="150" fill="transparent"/>`:''}<path d="M${t.x-50} ${t.y+30}l-6 44M${t.x+50} ${t.y+30}l6 44" stroke="#a87048" stroke-width="7" stroke-linecap="round"/><path d="M${t.x-72} ${t.y-8}q0 40 10 40h124q10 0 10-40z" fill="#fff" stroke="#ffb3cf" stroke-width="3"/><path d="M${t.x-66} ${t.y+22}q11 8 22 0t22 0 22 0 22 0 22 0 22 0" stroke="#ff8fb8" stroke-width="3" fill="none"/><ellipse cx="${t.x}" cy="${t.y-8}" rx="74" ry="20" fill="#fff" stroke="#ffb3cf" stroke-width="3"/>${ware}${top}</g>`}).join('');
 }
 function renderHud(){
  $('coins').textContent='🪙 '+S.coins;
@@ -339,6 +465,8 @@ function renderHud(){
  $('lv').firstChild.textContent='Lv '+S.lv;
  $('xpb').style.width=Math.min(100,S.xp/need(S.lv)*100)+'%';
  $('rate').textContent='★ '+S.rating.toFixed(1);
+ $('stg').textContent=`第 ${S.stage} 关`;$('sprog').textContent=`${S.sServed}/${goal(S.stage)}`;$('sbar').style.width=Math.min(100,S.sServed/goal(S.stage)*100)+'%';$('lives').textContent='♥'.repeat(Math.max(0,3-S.sMiss))+'♡'.repeat(Math.min(3,S.sMiss));
+ $('hint').style.display=SET.hints?'':'none';
  const th=TH.find(t=>t.id===S.theme)||TH[0];
  $('sc').style.setProperty('--kf',th.c[0]);$('sc').style.setProperty('--df',th.c[1]);
  $('decor').innerHTML=S.decor.map(d=>DSVG[d]||'').join('');
@@ -348,18 +476,18 @@ function renderChefSt(){
  $('tq').innerHTML=tasks.length?`还有 ${tasks.length}<br>件事排队`:'';
 }
 function renderHint(){
- const now=Date.now();
- const done=S.ovens.some(o=>o&&!o.col&&now-o.s>=rec(o.r).sec*1000);
+ const now=gnow();
+ const done=S.ovens.some(o=>o&&!o.col&&now-o.s>=odur(o));
  const sell=custs.some(c=>c.state==='wait'&&S.stock[c.want]>0);
  const dirty=TB.some(t=>t.dirty&&!t.clearing);
  const wants=[...new Set(custs.filter(c=>c.state==='wait'&&!(S.stock[c.want]>0)).map(c=>rec(c.want).n))];
- const idle=S.ovens.some(o=>!o),baking=S.ovens.find(o=>o&&now-o.s<rec(o.r).sec*1000);
+ const idle=S.ovens.some(o=>!o),baking=S.ovens.find(o=>o&&now-o.s<odur(o));
  let n,t;
  if(done){n=3;t='烤好啦！点发光的烤箱，骆店长会把点心收进甜点柜'}
  else if(sell){n=4;t='泡泡变绿的客人 → 点他，店长会端去餐桌（堂食）或打包（外带）'}
  else if(dirty){n=5;t='客人吃完走了，点有盘子的桌子让店长收拾，下一位才能坐'}
  else if(idle){n=1;t=wants.length?`客人在等「${wants.join('、')}」→ 点空烤箱选它来烤`:'点后厨的空烤箱，先烤「黄油曲奇」（最快最便宜）'}
- else if(baking){n=2;t=`烤箱正在烤，等一下（还要约 ${Math.ceil(rec(baking.r).sec-(now-baking.s)/1000)} 秒）`}
+ else if(baking){n=2;t=`烤箱正在烤，等一下（还要约 ${Math.ceil((odur(baking)-(now-baking.s))/1000)} 秒）`}
  else{n=2;t='烤箱都在忙，等烤好再收'}
  const h=`<span class="n">${n}</span><span>${t}</span>`;
  if($('hint').innerHTML!==h)$('hint').innerHTML=h;
@@ -367,7 +495,7 @@ function renderHint(){
 const all=()=>{oKey='';renderHud();renderCase();renderOvens();renderTables();refreshBubbles();renderHint();renderChefSt()};
 let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800)}
 function float(x,y,txt,col='#fff'){const t=document.createElementNS(NS,'text');t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','26');t.setAttribute('fill',col);t.setAttribute('class','fl');t.textContent=txt;$('fx').appendChild(t);setTimeout(()=>t.remove(),1100)}
-function gainXp(n){S.xp+=n;while(S.xp>=need(S.lv)){S.xp-=need(S.lv);S.lv++;gc('升到Lv'+S.lv);const nu=R.filter(r=>r.lv===S.lv);toast(`升到 Lv ${S.lv}！`+(nu.length?`解锁「${nu.map(r=>r.n).join('、')}」`:''))}}
+function gainXp(n){S.xp+=n;while(S.xp>=need(S.lv)){S.xp-=need(S.lv);S.lv++;gc('升到Lv'+S.lv);sfx('lvl');const nu=R.filter(r=>r.lv===S.lv);toast(`升到 Lv ${S.lv}！烤箱快 3%`+(nu.length?`解锁「${nu.map(r=>r.n).join('、')}」`:''))}}
 
 /* ---------- movement ---------- */
 const zone=p=>p[1]<430?0:1;
@@ -390,33 +518,33 @@ function spawn(){
  if(!ft.length&&!fq.length)return;
  const type=!fq.length?'dine':!ft.length?'take':(Math.random()<.55?'dine':'take');
  const u=unlocked(),inS=u.filter(r=>S.stock[r.id]>0);
- const r=S.served<2?R[0]:rnd((inS.length&&Math.random()<.7)?inS:u);
+ const top=u.slice(-3);const r=S.served<2?R[0]:(S.stage>=3&&Math.random()<Math.min(.6,S.stage*.07))?rnd(top):rnd((inS.length&&Math.random()<.7)?inS:u);
  const c={id:++cid,type,want:r.id,x:DOOR[0],y:DOOR[1],path:[],state:'in',ml:2,
   look:{skin:rnd(SKIN),hair:rnd(HAIR),shirt:rnd(SHIRT),hs:Math.floor(Math.random()*3)}};
  if(type==='dine'){c.seat=rnd(ft);const t=TB[c.seat];t.occ=c.id;c.path=[[600,t.y-4],[t.x,t.y-4]]}
  else{c.slot=rnd(fq);c.path=[[600,580],QS[c.slot]]}
- c.pat=(type==='dine'?95000:75000)+(S.served<5?30000:0)+Math.random()*20000;
+ c.pat=((type==='dine'?95000:75000)+Math.random()*20000)*patMult()+(S.served<5?30000:0);
  c.el=document.createElementNS(NS,'g');c.el.dataset.act='cust:'+c.id;$('custs').appendChild(c.el);c.bu=document.createElementNS(NS,'g');c.bu.dataset.act='cust:'+c.id;$('bubs').appendChild(c.bu);
  custs.push(c);drawCust(c);
 }
 function leave(c,angry){
  c.state='leave';
  if(c.type==='dine'){const t=TB[c.seat];if(t.occ===c.id)t.occ=null}
- c.path=c.type==='dine'?[[600,c.y],[600,880],DOOR]:[[600,580],DOOR];
- if(angry){c.ml=0;S.missed++;S.rating=Math.max(1,S.rating-.15);float(c.x,c.y-100,'等太久走了…','#5a2340');save();renderHud()}
+ c.path=c.type==='dine'?[[600,c.y],[600,985],DOOR]:[[600,580],DOOR];
+ if(angry){c.ml=0;S.missed++;S.sMiss++;sfx('sad');if(S.sMiss>=3)setTimeout(stageFail,600);S.rating=Math.max(1,S.rating-.15);float(c.x,c.y-100,'等太久走了…','#5a2340');save();renderHud()}
  drawCust(c);
 }
 function pay(c,mult){
  const r=rec(c.want),tip=Math.round(r.price*(tipPct()/100+(c.fs>.6?.2:0)));
  const amt=Math.round(r.price*mult)+tip;
- S.coins+=amt;S.earned+=amt;S.served++;if([10,50,100,300,1000].includes(S.served))gc('服务'+S.served+'位客人');S.rating=Math.min(5,S.rating+.05);gainXp(r.xp);
- float(c.x,c.y-95,`+${amt} 🪙`);save();renderHud();
+ S.coins+=amt;S.earned+=amt;S.served++;if([10,50,100,300,1000].includes(S.served))gc('服务'+S.served+'位客人');S.sServed++;sfx('coin');S.rating=Math.min(5,S.rating+.05);gainXp(r.xp);
+ float(c.x,c.y-95,`+${amt} 🪙`);save();renderHud();if(S.sServed>=goal(S.stage))setTimeout(stageClear,700);
 }
 function serve(c){
  if(c.state!=='wait')return;
  const r=rec(c.want);
  if(!(S.stock[c.want]>0)){const g=c.bu.firstChild||c.el.firstChild;g.classList.remove('shake');void g.getBBox();g.classList.add('shake');toast(`甜点柜没有${r.n}，先去烤！`);return}
- S.stock[c.want]--;c.state='pending';c.fs=1-(Date.now()-c.t0)/c.pat;
+ S.stock[c.want]--;c.state='pending';sfx('pop');c.fs=1-(gnow()-c.t0)/c.pat;
  drawCust(c);renderCase();refreshBubbles();save();
  if(c.type==='take'){
   addTask({to:[[QS[c.slot][0],290]],wait:450,label:`打包${r.n}给外带客人`,start:()=>setCarry(c.want),
@@ -424,7 +552,7 @@ function serve(c){
  }else{
   const t=TB[c.seat];
   addTask({to:[[300,290],[t.x+95,t.y+28]],wait:450,label:`把${r.n}端去 ${c.seat+1} 号桌`,start:()=>setCarry(c.want),
-   done:()=>{setCarry(null);c.state='eat';c.eatEnd=Date.now()+5500;t.food=c.want;renderTables();drawCust(c)}});
+   done:()=>{setCarry(null);c.state='eat';c.eatEnd=gnow()+5500;t.food=c.want;renderTables();drawCust(c)}});
  }
 }
 
@@ -443,28 +571,29 @@ $('sc').addEventListener('click',e=>{
  const [k,v]=a.dataset.act.split(':');
  if(k==='cust'){const c=custs.find(c=>c.id==v);if(c)serve(c)}
  else if(k==='table'){const t=TB[+v];if(!t.dirty||t.clearing)return;t.clearing=true;renderTables();
-  addTask({to:[[t.x+95,t.y+28]],wait:600,label:`收拾 ${+v+1} 号桌`,done:()=>{t.dirty=false;t.clearing=false;gainXp(1);float(t.x,t.y-40,'干净啦 ✨');renderTables();save();renderHud()}})}
+  sfx('click');addTask({to:[[t.x+95,t.y+28]],wait:600,label:`收拾 ${+v+1} 号桌`,done:()=>{t.dirty=false;t.clearing=false;gainXp(1);float(t.x,t.y-40,'干净啦 ✨');renderTables();save();renderHud()}})}
  else if(k==='buy'){const i=+v,c=OVEN_COST[i];if(S.coins<c){toast(`扩建还差 ${c-S.coins} 金币`);return}S.coins-=c;S.ovens.push(null);save();all();toast('新烤箱装好啦')}
  else if(k==='oven'){
   const i=+v,o=S.ovens[i];
   if(!o){pick(i);return}
   if(o.col)return;
-  const r=rec(o.r),el=Date.now()-o.s-r.sec*1000;
+  const r=rec(o.r),el=gnow()-o.s-odur(o);
   if(el<0){toast(`${r.n}还要 ${Math.ceil(-el/1000)} 秒`);return}
-  o.col=true;const fresh=el<5000;oKey='';renderOvens();
+  o.col=true;const fresh=el<FRESH();oKey='';renderOvens();
   addTask({to:[[OVX(i)+67,268]],wait:400,label:`把${r.n}收进甜点柜`,done:()=>{
    const q=r.qty+(fresh?1:0);S.stock[r.id]=(S.stock[r.id]||0)+q;S.ovens[i]=null;S.baked+=q;gainXp(1);
    float(OVX(i)+67,150,`${r.n} ×${q}`);save();all()}});
  }
 });
-function open(h){$('sheet').innerHTML=h;$('modal').classList.add('show')}
-function close(){$('modal').classList.remove('show')}
-$('modal').addEventListener('click',e=>{if(e.target.id==='modal'||e.target.closest('[data-close]'))close()});
+let onClose=null,locked=false;
+function open(h,opt={}){if(onClose&&!opt.keep){const f=onClose;onClose=null;f()}$('sheet').innerHTML=h;$('modal').classList.add('show');locked=!!opt.lock;if(opt.onClose)onClose=opt.onClose}
+function close(){$('modal').classList.remove('show');locked=false;if(onClose){const f=onClose;onClose=null;f()}}
+$('modal').addEventListener('click',e=>{if((e.target.id==='modal'&&!locked)||e.target.closest('[data-close]')){sfx('click');close()}});
 function pick(i){
  const want=new Set(custs.filter(c=>c.state==='wait').map(c=>c.want));
  const list=[...R].sort((a,b)=>(want.has(b.id)&&b.lv<=S.lv)-(want.has(a.id)&&a.lv<=S.lv));
  open(`<h3>烤点什么？</h3><p class="sub">粉框是客人正在等的。材料费先付，烤好收进甜点柜再卖。</p>`+list.map(r=>{const lk=r.lv>S.lv,w=want.has(r.id)&&!lk;
-  return `<div class="row ${lk?'lockd':''} ${w?'want':''}">${artH(r.id)}<div class="info"><b>${r.n}${w?'<em>客人在等</em>':''}</b><span>${lk?`Lv ${r.lv} 解锁`:`${r.sec}秒 · 出 ${r.qty} 份 · 每份卖 ${r.price}`}</span></div>${lk?'':`<button class="btn p" data-bake="${r.id}" data-i="${i}" ${S.coins<r.cost?'disabled':''}>🪙 ${r.cost}</button>`}</div>`}).join('')+`<button class="btn" style="width:100%;background:#fff4c7" data-close>取消</button>`);
+  return `<div class="row ${lk?'lockd':''} ${w?'want':''}">${artH(r.id)}<div class="info"><b>${r.n}${w?'<em>客人在等</em>':''}</b><span>${lk?`Lv ${r.lv} 解锁`:`${Math.round(r.sec*bakeMult())}秒 · 出 ${r.qty} 份 · 每份卖 ${r.price}`}</span></div>${lk?'':`<button class="btn p" data-bake="${r.id}" data-i="${i}" ${S.coins<r.cost?'disabled':''}>🪙 ${r.cost}</button>`}</div>`}).join('')+`<button class="btn" style="width:100%;background:#fff4c7" data-close>取消</button>`);
 }
 function book(){
  open(`<h3>食谱 · 照片</h3><p class="sub">已解锁 ${unlocked().length} / ${R.length}。点「换照片」可以用你自己拍的甜点照片，游戏里会全部换成照片显示。</p>`+R.map(r=>{const lk=r.lv>S.lv;
@@ -482,21 +611,60 @@ $('sheet').addEventListener('click',e=>{
  const u=e.target.closest('[data-unph]');
  if(u){delete PH[u.dataset.unph];PH.v=(PH.v||0)+1;savePH();renderCase();renderTables();renderHud();custs.forEach(drawCust);oKey='';renderOvens();book();return}
  const b=e.target.closest('[data-bake]');
- if(b){const r=rec(b.dataset.bake),i=+b.dataset.i;if(S.coins<r.cost||S.ovens[i])return;S.coins-=r.cost;S.ovens[i]={r:r.id,s:Date.now()};save();close();all();
+ if(b){const r=rec(b.dataset.bake),i=+b.dataset.i;if(S.coins<r.cost||S.ovens[i])return;S.coins-=r.cost;S.ovens[i]={r:r.id,s:gnow(),d:Math.round(r.sec*1000*bakeMult())};save();close();all();sfx('bake');
   addTask({to:[[OVX(i)+67,268]],wait:350,label:`把${r.n}放进烤箱`});return}
  const d=e.target.closest('[data-dec]');
  if(d){const it=D.find(x=>x.id===d.dataset.dec);if(S.coins<it.cost)return;S.coins-=it.cost;S.decor.push(it.id);save();all();shop('d');toast(`摆上了${it.n}，小费 +${it.tip}%`);return}
  const t=e.target.closest('[data-th]');
  if(t){const it=TH.find(x=>x.id===t.dataset.th);if(!t.dataset.own){if(S.coins<it.cost)return;S.coins-=it.cost;S.ownTh=[...(S.ownTh||[]),it.id]}S.theme=it.id;save();all();shop('t');return}
- const tab=e.target.closest('[data-tab]');if(tab)shop(tab.dataset.tab);
+ const up=e.target.closest('[data-up]');
+ if(up){const u=UPG.find(x=>x.k===up.dataset.up),l=S[u.k],c=u.cost[l];if(c==null||S.coins<c)return;S.coins-=c;S[u.k]++;save();all();sfx('lvl');shop('u');toast(`${u.n} 升到 Lv${S[u.k]}`);return}
+ const tab=e.target.closest('[data-tab]');if(tab){sfx('click');shop(tab.dataset.tab)}
 });
 function shop(tab='d'){
  const own=['night',...(S.ownTh||[])];
- const body=tab==='d'?D.map(d=>{const has=S.decor.includes(d.id);return `<div class="row"><svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#fff"/><path d="M20 8l3.4 7.4 8 .8-6 5.4 1.8 8-7.2-4.2-7.2 4.2 1.8-8-6-5.4 8-.8z" fill="${has?'#3fcf9a':'#ffd23f'}"/></svg><div class="info"><b>${d.n}</b><span>客人小费 +${d.tip}%</span></div>${has?'<button class="btn" disabled>已摆放</button>':`<button class="btn p" data-dec="${d.id}" ${S.coins<d.cost?'disabled':''}>🪙 ${d.cost}</button>`}</div>`}).join('')
+ const body=tab==='u'?`<p class="sub">等级加成：每升 1 级烘烤快 3%。现在烘烤时间是原本的 <b style="color:#ff5c9a">${Math.round(bakeMult()*100)}%</b>。</p><div class="ups">`+UPG.map(u=>{const l=S[u.k],mx=u.cost.length,c=u.cost[l];return `<div class="row"><svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#fff"/><path d="M20 8l10 12h-6v12h-8V20h-6z" fill="#ff5c9a"/></svg><div class="info"><b>${u.n} Lv${l}/${mx}</b><span>${u.d}</span></div>${l>=mx?'<button class="btn" disabled>已满级</button>':`<button class="btn p" data-up="${u.k}" ${S.coins<c?'disabled':''}>🪙 ${c}</button>`}</div>`}).join('')+'</div>':tab==='d'?D.map(d=>{const has=S.decor.includes(d.id);return `<div class="row"><svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#fff"/><path d="M20 8l3.4 7.4 8 .8-6 5.4 1.8 8-7.2-4.2-7.2 4.2 1.8-8-6-5.4 8-.8z" fill="${has?'#3fcf9a':'#ffd23f'}"/></svg><div class="info"><b>${d.n}</b><span>客人小费 +${d.tip}%</span></div>${has?'<button class="btn" disabled>已摆放</button>':`<button class="btn p" data-dec="${d.id}" ${S.coins<d.cost?'disabled':''}>🪙 ${d.cost}</button>`}</div>`}).join('')
  :TH.map(t=>{const o=own.includes(t.id),cu=S.theme===t.id;return `<div class="row"><svg viewBox="0 0 40 40"><rect width="40" height="20" rx="8" fill="${t.c[0]}"/><rect y="18" width="40" height="22" rx="8" fill="${t.c[1]}"/></svg><div class="info"><b>${t.n}</b><span>${cu?'正在使用':o?'已拥有':'后厨地砖 + 堂食地板'}</span></div>${cu?'<button class="btn" disabled>使用中</button>':`<button class="btn ${o?'':'p'}" data-th="${t.id}" ${o?'data-own="1"':''} ${!o&&S.coins<t.cost?'disabled':''}>${o?'换上':'🪙 '+t.cost}</button>`}</div>`}).join('');
- open(`<h3>装修商店</h3><p class="sub">现在小费加成 +${tipPct()}% · 🪙 ${S.coins}</p><div class="tabs"><button class="btn ${tab==='d'?'on':''}" data-tab="d">摆件</button><button class="btn ${tab==='t'?'on':''}" data-tab="t">地板主题</button></div>${body}<button class="btn" style="width:100%;background:#fff4c7" data-close>关闭</button>`);
+ open(`<h3>升级 · 装修</h3><p class="sub">现在小费加成 +${tipPct()}% · 🪙 ${S.coins}</p><div class="tabs"><button class="btn ${tab==='u'?'on':''}" data-tab="u">升级</button><button class="btn ${tab==='d'?'on':''}" data-tab="d">摆件</button><button class="btn ${tab==='t'?'on':''}" data-tab="t">地板主题</button></div>${body}<button class="btn" style="width:100%;background:#fff4c7" data-close>关闭</button>`);
 }
-$('bShop').onclick=()=>shop('d');
+$('bShop').onclick=()=>shop('u');
+function setPaused(v){if(v===paused)return;if(v){pauseAt=Date.now();paused=true;AU.ctx&&AU.ctx.suspend()}else{pausedAcc+=Date.now()-pauseAt;paused=false;AU.ctx&&AU.ctx.resume()}}
+function pauseMenu(){setPaused(true);open(`<h3>已暂停</h3><p class="sub">客人、烤箱和计时都停住了。</p><div class="big">☕</div><button class="btn p" style="width:100%;margin-bottom:8px" data-close>继续营业</button><button class="btn" style="width:100%;background:#fff4c7" id="toSet">设定</button>`,{lock:true,onClose:()=>setPaused(false)})}
+const TRK=['午后甜点','草莓华尔兹','焦糖夜曲'];
+function settings(){
+ const was=paused;setPaused(true);
+ open(`<h3>设定</h3><div class="set">
+  <label>背景音乐<input type="range" min="0" max="100" value="${Math.round(SET.music*100)}" id="vM"><span class="v" id="vMv">${Math.round(SET.music*100)}</span></label>
+  <label>音效<input type="range" min="0" max="100" value="${Math.round(SET.sfx*100)}" id="vS"><span class="v" id="vSv">${Math.round(SET.sfx*100)}</span></label>
+  <div><b>曲目</b><div class="seg" style="margin-top:6px">${TRK.map((n,i)=>`<button data-trk="${i}" class="${SET.track===i?'on':''}">${n}</button>`).join('')}</div></div>
+  <div class="tg">显示步骤提示<button class="btn ${SET.hints?'p':''}" data-tog="hints">${SET.hints?'开':'关'}</button></div>
+  <div class="tg">切到后台自动暂停<button class="btn ${SET.auto?'p':''}" data-tog="auto">${SET.auto?'开':'关'}</button></div>
+ </div><button class="btn p" style="width:100%" data-close>${was?'关闭':'继续营业'}</button>`,{lock:true,onClose:()=>{if(!was)setPaused(false)}});
+}
+$('bPause').onclick=()=>{audioInit();sfx('click');pauseMenu()};
+$('bSet').onclick=()=>{audioInit();sfx('click');settings()};
+$('sheet').addEventListener('input',e=>{
+ if(e.target.id==='vM'){SET.music=e.target.value/100;$('vMv').textContent=e.target.value;applyVol();saveSet()}
+ if(e.target.id==='vS'){SET.sfx=e.target.value/100;$('vSv').textContent=e.target.value;applyVol();saveSet()}
+});
+$('sheet').addEventListener('click',e=>{
+ if(e.target.id==='toSet'){onClose=null;settings();return}
+ const tk=e.target.closest('[data-trk]');if(tk){SET.track=+tk.dataset.trk;saveSet();startMusic(true);for(const b of document.querySelectorAll('[data-trk]'))b.classList.toggle('on',b===tk);return}
+ const tg=e.target.closest('[data-tog]');if(tg){const k=tg.dataset.tog;SET[k]=!SET[k];saveSet();tg.classList.toggle('p',SET[k]);tg.textContent=SET[k]?'开':'关';renderHud();sfx('click')}
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&SET.auto&&!paused)pauseMenu()});
+function stageClear(){
+ if(S.sServed<goal(S.stage))return;
+ const st=S.stage,rw=30+st*25;S.coins+=rw;S.earned+=rw;S.stage++;S.sServed=0;S.sMiss=0;gainXp(3+st);save();renderHud();sfx('clear');typeof gc==='function'&&gc('通关第'+st+'关');
+ setPaused(true);
+ open(`<h3>第 ${st} 关 通关！</h3><div class="big">🎉</div><p class="sub" style="text-align:center">奖励 🪙 ${rw}。下一关要服务 ${goal(S.stage)} 位客人，客人会更没耐心、来得更快，也更常点贵的甜点。</p><button class="btn p" style="width:100%" data-close>开始第 ${S.stage} 关</button>`,{lock:true,onClose:()=>setPaused(false)});
+}
+function stageFail(){
+ if(S.sMiss<3)return;
+ const st=S.stage;S.sServed=0;S.sMiss=0;save();renderHud();sfx('sad');
+ setPaused(true);
+ open(`<h3>第 ${st} 关 失败了</h3><div class="big">🥲</div><p class="sub" style="text-align:center">有 3 位客人等太久走掉了。这一关的进度重新算，金币和等级都保留。可以先去「装修商店 → 升级」加强一下再来。</p><button class="btn p" style="width:100%" data-close>再挑战一次</button>`,{lock:true,onClose:()=>setPaused(false)});
+}
 function names(){
  open(`<h3>给店取个名字</h3><p class="sub">挑一个，或者自己写（最多 8 个字）。</p><div class="names">${NAMES.map(n=>`<button data-nm="${n}" class="${n===S.shop?'on':''}">${n}</button>`).join('')}</div><div class="cname"><input id="nmIn" maxlength="8" placeholder="自己取名…" value=""><button class="btn p" data-nmc style="padding:0 16px">用这个</button></div><button class="btn" style="width:100%;background:#fff4c7" data-close>关闭</button>`);
 }
@@ -512,9 +680,9 @@ document.addEventListener('click',e=>{if(e.target.id==='toNames'){names();return
  else{e.target.dataset.sure=1;e.target.textContent='再点一次确认清空'}});
 
 /* ---------- loops ---------- */
-let last=performance.now();
+let last=performance.now();const lastOv=[];
 function frame(t){
- const dt=Math.min(.05,(t-last)/1000);last=t;const now=Date.now();
+ const dt=Math.min(.05,(t-last)/1000);last=t;if(paused){requestAnimationFrame(frame);return}const now=gnow();
  if(!cur&&tasks.length){cur=tasks.shift();cur.start&&cur.start();chef.path=buildPts(cur.to);curWait=cur.wait||300;renderChefSt()}
  const mv=move(chef,dt,440);
  if(cur&&!mv){curWait-=dt*1000;if(curWait<=0){const d=cur.done;cur=null;d&&d();renderChefSt()}}
@@ -533,8 +701,10 @@ function frame(t){
  requestAnimationFrame(frame);
 }
 setInterval(()=>{
- const now=Date.now();
- if(now>nextSpawn){spawn();nextSpawn=now+(6000+Math.random()*5000)*(1.6-S.rating/5*.6)}
+ if(paused)return;
+ const now=gnow();
+ S.ovens.forEach((o,i)=>{const st=o?ovState(o,now)[0]:'e';if(st==='f'&&lastOv[i]==='b')sfx('done');lastOv[i]=st});
+ if(now>nextSpawn){spawn();nextSpawn=now+(6000+Math.random()*5000)*(1.6-S.rating/5*.6)*spawnMult()}
  renderOvens();renderHint();
 },500);
 all();
