@@ -42,6 +42,9 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Noto Sans SC"
 .ib{flex:none;width:40px;height:40px;border-radius:12px;border:0;background:var(--yel);display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 0 #e0a800}
 .ib svg{width:20px;height:20px}
 .ib:focus-visible{outline:3px solid var(--ink)}
+.savebox textarea{width:100%;min-height:90px;border:2px solid var(--pink2);border-radius:14px;padding:10px;font:14px/1.4 ui-monospace,monospace;color:var(--ink);resize:vertical;user-select:text;-webkit-user-select:text}
+.savebox .st{display:flex;align-items:center;gap:10px;background:#e8fff4;border-radius:14px;padding:12px;margin-bottom:12px;font-weight:700}
+.savebox h4{margin:14px 0 6px;font-size:15px}
 .set{display:grid;gap:12px;margin-bottom:14px}
 .set label{display:grid;grid-template-columns:5.5em minmax(0,1fr) 3em;align-items:center;gap:10px;font-weight:700}
 .set input[type=range]{width:100%;accent-color:var(--pink);height:32px}
@@ -113,6 +116,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Noto Sans SC"
   </div>
   <div class="strip">
     <b id="stg">第 1 关</b><div class="sbar"><i id="sbar"></i></div><span class="sp" id="sprog">0/8</span><span class="lives" id="lives">♥♥♥</span>
+    <button class="ib" id="bSave" aria-label="保存"><svg viewBox="0 0 24 24"><path d="M4 3h13l4 4v14H3V3z" fill="#5a2340"/><rect x="7" y="4" width="9" height="6" rx="1" fill="#ffd23f"/><rect x="7" y="13" width="10" height="7" rx="1.5" fill="#fff"/></svg></button>
     <button class="ib" id="bPause" aria-label="暂停"><svg viewBox="0 0 20 20"><rect x="4" y="3" width="4" height="14" rx="1.5" fill="#5a2340"/><rect x="12" y="3" width="4" height="14" rx="1.5" fill="#5a2340"/></svg></button>
     <button class="ib" id="bSet" aria-label="设定"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm9 4.6v-2.2l-2.4-.5a7 7 0 0 0-.8-1.9l1.4-2-1.6-1.6-2 1.4a7 7 0 0 0-1.9-.8L13.1 3h-2.2l-.5 2.4a7 7 0 0 0-1.9.8l-2-1.4-1.6 1.6 1.4 2a7 7 0 0 0-.8 1.9L3 10.9v2.2l2.4.5c.2.7.4 1.3.8 1.9l-1.4 2 1.6 1.6 2-1.4c.6.4 1.2.6 1.9.8l.5 2.4h2.2l.5-2.4c.7-.2 1.3-.4 1.9-.8l2 1.4 1.6-1.6-1.4-2c.4-.6.6-1.2.8-1.9z" fill="#5a2340"/></svg></button>
   </div>
@@ -270,7 +274,8 @@ const UPG=[
  {k:'upWarm',n:'保温灯',d:'「刚出炉 +1份」的时间多 2.5 秒',cost:[100,220,400]},
  {k:'upPat',n:'舒适座椅',d:'客人愿意多等 10%',cost:[150,300,550,900]}
 ];
-const save=()=>{try{localStorage.setItem('moonBakery',JSON.stringify(S))}catch(e){}};
+let lastSave=0;
+const save=()=>{try{localStorage.setItem('moonBakery',JSON.stringify(S));lastSave=Date.now();return true}catch(e){return false}};
 const savePH=()=>{try{localStorage.setItem('moonBakeryPhotos',JSON.stringify(PH));return true}catch(e){return false}};
 const need=l=>15+l*20;
 const tipPct=()=>S.decor.reduce((a,id)=>a+(D.find(d=>d.id===id)?.tip||0),0);
@@ -641,6 +646,33 @@ function settings(){
   <div class="tg">切到后台自动暂停<button class="btn ${SET.auto?'p':''}" data-tog="auto">${SET.auto?'开':'关'}</button></div>
  </div><button class="btn p" style="width:100%" data-close>${was?'关闭':'继续营业'}</button>`,{lock:true,onClose:()=>{if(!was)setPaused(false)}});
 }
+const hhmm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')};
+const enc=o=>'MB1:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const dec=c=>JSON.parse(decodeURIComponent(escape(atob(c.trim().replace(/^MB1:/,'')))));
+function saveMenu(){
+ const ok=save();sfx(ok?'coin':'sad');
+ open(`<div class="savebox"><h3>保存进度</h3>
+  <div class="st"><span style="font-size:26px">${ok?'✅':'⚠️'}</span><span>${ok?`已保存！（${hhmm(lastSave)}）<br><small style="font-weight:400;color:#2a6b52">第 ${S.stage} 关 · Lv ${S.lv} · 🪙 ${S.coins}</small>`:'这个浏览器不允许保存（可能是无痕模式），请用下面的存档码手动备份。'}</span></div>
+  <p class="sub">游戏平时也会自动保存在这个浏览器里。想换手机继续玩、或者怕清掉浏览器资料，就复制存档码存起来（例如发给自己 WhatsApp）。</p>
+  <h4>我的存档码</h4><textarea id="code" readonly>${enc(S)}</textarea>
+  <button class="btn p" style="width:100%;margin:8px 0" id="cpy">复制存档码</button>
+  <h4>读取存档码</h4><textarea id="inCode" placeholder="把之前复制的存档码贴在这里…"></textarea>
+  <button class="btn" style="width:100%;margin:8px 0;background:#fff4c7" id="load">读取这个存档</button>
+  <button class="btn p" style="width:100%" data-close>继续营业</button></div>`);
+}
+$('bSave').onclick=()=>{audioInit();saveMenu()};
+$('sheet').addEventListener('click',e=>{
+ if(e.target.id==='cpy'){const ta=$('code');const t=ta.value;const done=()=>{toast('存档码已复制');sfx('click')};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>{ta.select();toast('请长按文字选择「复制」')});else{ta.select();toast('请长按文字选择「复制」')}}
+ if(e.target.id==='load'){const v=$('inCode').value;if(!v.trim()){toast('先贴上存档码');return}
+  if(!e.target.dataset.sure){e.target.dataset.sure=1;e.target.textContent='再点一次确认（会覆盖现在的进度）';return}
+  try{const o=dec(v);if(typeof o!=='object'||o.coins==null)throw 0;
+   S=Object.assign({},def,o);S.stage=S.stage||1;S.sServed=S.sServed||0;S.sMiss=S.sMiss||0;S.upOven=S.upOven||0;S.upWarm=S.upWarm||0;S.upPat=S.upPat||0;S.decor=S.decor||[];S.stock=S.stock||{};S.ovens=(S.ovens||[null,null]).map(x=>x?{r:x.r,s:gnow()-(x.d||rec(x.r).sec*1000),d:x.d}:null);
+   custs.forEach(c=>{c.el.remove();c.bu.remove()});custs=[];tasks=[];cur=null;setCarry(null);TB.forEach(t=>Object.assign(t,{occ:null,dirty:false,food:null,clearing:false}));
+   save();close();all();toast(`读取成功：第 ${S.stage} 关 · Lv ${S.lv}`);sfx('lvl')}
+  catch(err){toast('存档码不对，检查一下有没有贴完整');e.target.dataset.sure='';e.target.textContent='读取这个存档'}}
+});
+window.addEventListener('pagehide',save);
 $('bPause').onclick=()=>{audioInit();sfx('click');pauseMenu()};
 $('bSet').onclick=()=>{audioInit();sfx('click');settings()};
 $('sheet').addEventListener('input',e=>{
