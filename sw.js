@@ -1,5 +1,5 @@
 // 钢魂烈斗 offline + auto-update service worker
-const VERSION = 'steel-soul-v2.4.0';
+const VERSION = 'steel-soul-v2.5.0';
 const CORE = ['./', './index.html', './all.html', './manifest.webmanifest', './manifest-all.webmanifest',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 const LIBS = ['three.min.js', 'CopyShader.js', 'LuminosityHighPassShader.js', 'GammaCorrectionShader.js', 'EffectComposer.js',
