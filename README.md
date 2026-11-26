@@ -19,7 +19,7 @@
 ![Platform](https://img.shields.io/badge/平台-手机_|_电脑浏览器-222?style=flat-square)
 ![Engine](https://img.shields.io/badge/引擎-three.js_3D-222?style=flat-square)
 ![PWA](https://img.shields.io/badge/可安装成App-离线可玩-222?style=flat-square)
-![Version](https://img.shields.io/badge/版本-v2.5-ff5a1f?style=flat-square)
+![Version](https://img.shields.io/badge/版本-v2.6-ff5a1f?style=flat-square)
 
 </div>
 
@@ -49,7 +49,9 @@
 | 📺 **1080p 60fps** | 新画质档位 + 动态分辨率，掉帧自动调整 |
 | 💚 **补给系统** | 打倒敌人掉落血包 / 能量包，补给箱随机空投，血量不会自动回复 |
 | ☠ **困难模式** | Boss 10 万血以上、敌人更强更快，奖励 ×3 |
-| 🎨 **皮肤系统** | 黄金、暗黑、极光、虚无皮肤，招式特效颜色会跟着变 |
+| 🎨 **皮肤专属招式** | 黄金（金币火花）、暗黑（烟雾红斩）、极光（彩虹光环）、虚无（黑洞内爆），每套皮肤招式特效都不一样 |
+| 🌀 **专属出场 & 胜利动作** | 每台机体出场都不同（飞跃砸地、雷劈降临、烟遁瞬移、冰柱破封、舞台升起…），各有待机、跑姿和胜利动作 |
+| 🖼️ **动漫风封面 & 载入海报** | 全员主视觉封面，进入每个模式都会随机出现机体特写海报 + LOADING |
 | 🎬 **电影级选人镜头** | 低角度、冲击推镜、360° 环绕、面部特写 |
 | 🎵 **原创配乐** | 封面、选人、每个关卡都有不同的 BGM |
 | 📲 **装成手机 App** | 加到主屏幕，离线也能玩，自动更新 |
