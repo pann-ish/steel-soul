@@ -19,7 +19,7 @@
 ![Platform](https://img.shields.io/badge/平台-手机_|_电脑浏览器-222?style=flat-square)
 ![Engine](https://img.shields.io/badge/引擎-three.js_3D-222?style=flat-square)
 ![PWA](https://img.shields.io/badge/可安装成App-离线可玩-222?style=flat-square)
-![Version](https://img.shields.io/badge/版本-v2.6-ff5a1f?style=flat-square)
+![Version](https://img.shields.io/badge/版本-v2.7-ff5a1f?style=flat-square)
 
 </div>
 
@@ -51,6 +51,9 @@
 | ☠ **困难模式** | Boss 10 万血以上、敌人更强更快，奖励 ×3 |
 | 🎨 **皮肤专属招式** | 黄金（金币火花）、暗黑（烟雾红斩）、极光（彩虹光环）、虚无（黑洞内爆），每套皮肤招式特效都不一样 |
 | 🌀 **专属出场 & 胜利动作** | 每台机体出场都不同（飞跃砸地、雷劈降临、烟遁瞬移、冰柱破封、舞台升起…），各有待机、跑姿和胜利动作 |
+| 🎮 **高达式锁定镜头** | 战斗镜头自动锁定敌人，从机体肩后看过去，出招和命中都看得清楚 |
+| 👊 **专属普通攻击** | 赤焰钻头突刺、铁拳火箭飞拳、影刃手里剑、雷神落雷、柠檬狼冰刺、捷虒音波环、阿兰峥静音冲击 |
+| 📱 **旗舰手机优化** | 针对 iPhone 15 / POCO X8 Pro Max 及以上：1080p 动态分辨率、120Hz 屏锁 60fps 省电降温，卡顿时自动降画质 |
 | 🖼️ **动漫风封面 & 载入海报** | 全员主视觉封面，进入每个模式都会随机出现机体特写海报 + LOADING |
 | 🎬 **电影级选人镜头** | 低角度、冲击推镜、360° 环绕、面部特写 |
 | 🎵 **原创配乐** | 封面、选人、每个关卡都有不同的 BGM |
